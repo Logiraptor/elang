@@ -1,0 +1,7 @@
+true: package(core), \
+      package(llvm), package(llvm.bitreader), \
+      package(llvm.executionengine), package(llvm.analysis), \
+      package(sexplib), package(ppx_sexp_conv), use_menhir
+<src/*>: traverse
+<test/*>: traverse
+<test/*>: package(oUnit), package(qcheck)
