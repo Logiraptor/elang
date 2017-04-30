@@ -1,0 +1,7 @@
+S test
+S src
+B _build/test
+B _build/src
+PKG core core.std
+PKG llvm llvm.bitreader llvm.executionengine llvm.analysis
+PKG sexplib ppx_sexp_conv qcheck oUnit

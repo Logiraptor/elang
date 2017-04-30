@@ -29,5 +29,5 @@ clean:
 	rm -rf _build
 
 
-nodocker: *.ml parser.mly lexer.mll
-	ocamlbuild -use-ocamlfind -use-menhir -tag thread -pkg core main.native
+nodocker: src/*
+	$(buildCmd) ./src/main.native

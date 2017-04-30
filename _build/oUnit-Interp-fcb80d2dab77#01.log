@@ -1,7 +1,0 @@
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 I: Start test Interp:0:can interpret constant integers.
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 E: Test Interp:0:can interpret constant integers has failed.
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 E: expected: ((Int 1)) but got: ((Int 0)) in test Interp:0:can interpret constant integers.
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 E: Raised at file "src/oUnitAssert.ml", line 45, characters 8-27
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 E: 
-2017-04-29T01:34:17+00:00 fcb80d2dab77#01 I: End test Interp:0:can interpret constant integers.

@@ -9,33 +9,33 @@ module CodeEmitter = struct
   type func = string
   type block = string
   type instruction =
-      | ConstInt of int
-      [@@deriving sexp]
- 
+    | ConstInt of int
+  [@@deriving sexp]
+
   let output () : string =
-      List.fold_left (^) "" (!_defined_modules)
+    List.fold_left (^) "" (!_defined_modules)
 
   let reset () =
-      _defined_modules := []
+    _defined_modules := []
 
   let emit_const_int value b =
-      sprintf "%sconst_int %d;" b value
+    sprintf "%sconst_int %d;" b value
 
   let open_module name =
-      name ^ "{"
-  
+    name ^ "{"
+
   let close_module m =
-      _defined_modules := (m ^ "}")::(!_defined_modules)
-  
+    _defined_modules := (m ^ "}")::(!_defined_modules)
+
   let open_function name m =
-      m ^ name ^ "("
+    m ^ name ^ "("
 
   let close_function f =
-      f ^ ")"
+    f ^ ")"
 
   let start_block name m =
-      m ^ name ^ "["
-  
+    m ^ name ^ "["
+
   let end_block b =
-      b ^ "]"
+    b ^ "]"
 end
