@@ -8,7 +8,7 @@ end
 (*Parser takes a filename and turns it into an ast*)
 module type Parser = sig
   type ast
-  val parse_string : Core.Std.In_channel.t -> ast
+  val parse_channel : string -> Core.Std.In_channel.t -> (ast, string) result
 end
 
 (*Loader takes a filename and turns it into a module*)

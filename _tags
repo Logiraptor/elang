@@ -2,7 +2,7 @@ true: package(core), \
       package(llvm), package(llvm.bitreader), \
       package(llvm.executionengine), package(llvm.analysis), \
       package(sexplib), package(ppx_sexp_conv), package(ppx_custom_printf), \
-      package(menhirLib)
+      package(menhirLib), package(ANSITerminal)
 true: use_menhir
 <src/*>: traverse
 <test/*>: traverse

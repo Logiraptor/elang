@@ -1,5 +1,5 @@
 
-
+TEMPFILE := $(shell mktemp)
 pwd = $(shell pwd)
 buildDate = $(shell date)
 
@@ -26,8 +26,9 @@ docker-build-date: Dockerfile
 	echo $(buildDate) > docker-build-date
 
 src/handmade.messages: src/elang_parser.mly
-	menhir --update-errors src/handmade.messages src/elang_parser.mly > src/handmade.messages.tmp
-	mv src/handmade.messages.tmp src/handmade.messages
+	menhir --update-errors src/handmade.messages src/elang_parser.mly > $(TEMPFILE)
+	mv $(TEMPFILE) src/handmade.messages
+	rm $(TEMPFILE)
 
 src/error_messages.ml: src/handmade.messages
 	menhir --compile-errors src/handmade.messages src/elang_parser.mly > src/error_messages.ml

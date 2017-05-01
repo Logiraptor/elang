@@ -43,3 +43,5 @@ RUN opam install -y ppx_driver
 RUN opam install -y merlin
 
 RUN opam install -y ocp-indent
+
+RUN opam install -y ANSITerminal

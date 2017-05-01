@@ -3,8 +3,8 @@ open Elang_lex
 open Lexing
 open Printf
 
-
-module Elang = Language.Make(Loader)(Compiler)(Interpreter)
+module L = Loader.Make(FileResolver)(Syntax_analyzer)
+module Elang = Language.Make(L)(Compiler)(Interpreter)
 
 let loop filename () =
   match Elang.execute filename with
