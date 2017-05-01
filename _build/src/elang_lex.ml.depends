@@ -1,1 +1,1 @@
-src/elang_lex.ml: Elang Lexing
+src/elang_lex.ml: Elang_parser Lexing Printf

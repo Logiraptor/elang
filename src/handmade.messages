@@ -1,0 +1,61 @@
+prog: INT 
+##
+## Ends in an error in state: 0.
+##
+## prog' -> . prog [ # ]
+##
+## The known suffix of the stack is as follows:
+## 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQUAL INT INT 
+##
+## Ends in an error in state: 9.
+##
+## nonempty_list(func) -> func . [ EOF ]
+## nonempty_list(func) -> func . nonempty_list(func) [ EOF ]
+##
+## The known suffix of the stack is as follows:
+## func 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQUAL LET 
+##
+## Ends in an error in state: 3.
+##
+## func -> LET ID EQUAL . value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LET 
+##
+## Ends in an error in state: 2.
+##
+## func -> LET ID . EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET LET 
+##
+## Ends in an error in state: 1.
+##
+## func -> LET . ID EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
