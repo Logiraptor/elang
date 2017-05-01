@@ -60,10 +60,11 @@ let get_context lines lexbuf : string list  =
 
 
 let print_error_block (location : string) (inner : string list) : string =
+  let (width, height) = ANSITerminal.size () in
   let right_block = String.make 16 '-' in
   let left_block = String.make 4 '-' in
   let header = left_block ^ location ^ right_block in
-  let footer = String.make (String.length header) '-' in
+  let footer = String.make ((String.length header) - 9) '-' in
   let body = String.concat ~sep:"\n" inner in
   String.concat ~sep:"\n" [header; body; footer]
 
