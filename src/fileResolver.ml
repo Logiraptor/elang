@@ -1,4 +1,9 @@
 open Core.Std
 
-let resolve name : In_channel.t =
-  In_channel.create name
+type filetype = {
+  chan: In_channel.t;
+  filename: string
+}
+
+let resolve name =
+  Ok ({chan=In_channel.create name; filename=name})

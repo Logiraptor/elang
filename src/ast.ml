@@ -13,3 +13,7 @@ type prog =
 
 type ast =
   prog
+
+module SymbolTable = struct
+  include Map.Make(String)
+end

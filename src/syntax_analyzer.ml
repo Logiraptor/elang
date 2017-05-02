@@ -6,6 +6,8 @@ open Printf
 
 type ast = Ast.ast
 
+type filetype = FileResolver.filetype
+
 module I = Elang_parser.MenhirInterpreter
 
 let print_position lexbuf =
@@ -94,11 +96,12 @@ let loop lines lexbuf result =
   let supplier = I.lexer_lexbuf_to_supplier Elang_lex.read lexbuf in
   I.loop_handle succeed (fail lines lexbuf) supplier result
 
-let parse_channel filename chan =
-  let text = In_channel.input_all chan in
+let parse_file (file : FileResolver.filetype) =
+  let open FileResolver in
+  let text = In_channel.input_all file.chan in
   let lines = String.split_lines text in
   let lexbuf = from_string text in
-  let _ = lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } in
+  let _ = lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = file.filename } in
   try
     loop lines lexbuf (Elang_parser.Incremental.prog lexbuf.lex_curr_p)
   with

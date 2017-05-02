@@ -2,13 +2,15 @@ open Result
 
 (*FileResolver resolves a filename to an open file*)
 module type FileResolver = sig
-  val resolve : string -> Core.Std.In_channel.t
+  type filetype
+  val resolve : string -> (filetype, string) result
 end
 
 (*Parser takes a filename and turns it into an ast*)
 module type Parser = sig
+  type filetype
   type ast
-  val parse_channel : string -> Core.Std.In_channel.t -> (ast, string) result
+  val parse_file : filetype -> (ast, string) result
 end
 
 (*Loader takes a filename and turns it into a module*)
