@@ -7,14 +7,10 @@ let message =
   fun s ->
     match s with
     | 1 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE 1>\n"
+        "Expected to find a declaration here after 'let'\n"
     | 2 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE 2>\n"
-    | 3 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE 3>\n"
-    | 9 ->
-        "Unexpected token after function declaration\n"
+        "Expected to find argument list\n"
     | 0 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE 0>\n"
+        "Hint: Your program should start with a function declaration\n"
     | _ ->
         raise Not_found

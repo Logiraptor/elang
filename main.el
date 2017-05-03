@@ -1,7 +1,7 @@
 
 
 
-let main = 1337
+let main() = 1337
 
 
 

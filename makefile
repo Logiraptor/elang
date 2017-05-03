@@ -28,7 +28,7 @@ docker-build-date: Dockerfile
 src/handmade.messages: src/elang_parser.mly
 	menhir --update-errors src/handmade.messages src/elang_parser.mly > $(TEMPFILE)
 	mv $(TEMPFILE) src/handmade.messages
-	rm $(TEMPFILE)
+	rm -f $(TEMPFILE)
 
 src/error_messages.ml: src/handmade.messages
 	menhir --compile-errors src/handmade.messages src/elang_parser.mly > src/error_messages.ml

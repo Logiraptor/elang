@@ -2,6 +2,9 @@
 %token <string> ID
 %token LET
 %token EQUAL
+%token COMMA
+%token LPAREN
+%token RPAREN
 
 %token EOF
 
@@ -12,7 +15,10 @@ prog:
   | l = nonempty_list(func) EOF { l };
 
 func:
-  | LET id=ID EQUAL v=value { (id, [], v) }
+  | LET id=ID LPAREN a=args RPAREN EQUAL v=value { (id, a, v) }
+
+args:
+  | l = separated_list(COMMA, ID) { l };
 
 value:
   | i = INT { Ast.INT i };

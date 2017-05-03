@@ -34,6 +34,9 @@ rule read = parse
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
   | "let"          { LET }
   | "="            { EQUAL }
+  | ","            { COMMA }
+  | "("            { LPAREN }
+  | ")"            { RPAREN }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
