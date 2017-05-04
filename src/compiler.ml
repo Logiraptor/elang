@@ -8,6 +8,26 @@ let i32_t = Llvm.i32_type llctx
 
 exception UndefinedSymbol of string
 
+let pf =
+  let open Llvm in
+  let i8_t = i8_type llctx in
+  let i32_t = i32_type llctx in
+  let printf_ty = var_arg_function_type i32_t [| pointer_type i8_t |] in
+  let printf = declare_function "printf" printf_ty llm in
+  add_function_attr printf Attribute.Nounwind ;
+  add_param_attr (param printf 0) Attribute.Nocapture ;
+  printf
+
+
+let add_hello_world llbuilder = 
+  let open Llvm in
+  let s = build_global_stringptr "Hello, world!\n" "" llbuilder in
+  let zero = const_int i32_t 0 in
+  let s = build_in_bounds_gep s [| zero |] "" llbuilder in
+  let _ = build_call pf [| s |] "" llbuilder in
+  ()
+
+
 let rec generate_expr names llbuilder expr =
   match expr with
   | Ast.Int i -> (Llvm.const_int i32_t i)
@@ -47,6 +67,7 @@ let generate_func names (name, args, expr) =
   (*let _ = print_string name; print_newline () in*)
   let f = Ast.SymbolTable.find name names in
   let llbuilder = Llvm.builder_at_end llctx (Llvm.entry_block f) in
+  let _ = add_hello_world llbuilder in
   let localnames = name_args names f args in
   (*let _ = Ast.SymbolTable.iter (fun name _ -> print_string name; print_newline ()) localnames in*)
   let return_value = generate_expr localnames llbuilder expr in
@@ -67,4 +88,5 @@ let generate_code m =
   let names = List.fold_left add_func_decl Ast.SymbolTable.empty m.ast in
   let _ = List.iter (generate_func names) m.ast in
   let _ = Llvm_analysis.assert_valid_module llm in
+  let _ = Llvm.dump_module llm in
   Result.Ok llm
