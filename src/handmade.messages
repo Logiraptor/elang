@@ -34,3 +34,89 @@ prog: LET LET
 
 Expected to find a declaration here after 'let'
 
+prog: LET ID LPAREN ID ID COMMA RPAREN 
+##
+## Ends in an error in state: 26.
+##
+## separated_nonempty_list(COMMA,arg) -> arg COMMA . separated_nonempty_list(COMMA,arg) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## arg COMMA 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LPAREN ID ID LPAREN 
+##
+## Ends in an error in state: 25.
+##
+## separated_nonempty_list(COMMA,arg) -> arg . [ RPAREN ]
+## separated_nonempty_list(COMMA,arg) -> arg . COMMA separated_nonempty_list(COMMA,arg) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## arg 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LPAREN ID RPAREN 
+##
+## Ends in an error in state: 4.
+##
+## arg -> ID . typ [ RPAREN COMMA ]
+##
+## The known suffix of the stack is as follows:
+## ID 
+##
+
+Expected an argument name following this type
+
+prog: LET ID LPAREN LPAREN 
+##
+## Ends in an error in state: 3.
+##
+## func -> LET ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LPAREN RPAREN EQUAL INT RPAREN 
+##
+## Ends in an error in state: 14.
+##
+## func -> LET ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
+## value -> value . PLUS value [ PLUS LPAREN LET EOF ]
+## value -> value . LPAREN params RPAREN [ PLUS LPAREN LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID LPAREN args RPAREN EQUAL value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LPAREN RPAREN EQUAL RPAREN 
+##
+## Ends in an error in state: 11.
+##
+## func -> LET ID LPAREN args RPAREN EQUAL . value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID LPAREN args RPAREN EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID LPAREN RPAREN RPAREN 
+##
+## Ends in an error in state: 10.
+##
+## func -> LET ID LPAREN args RPAREN . EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET ID LPAREN args RPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>

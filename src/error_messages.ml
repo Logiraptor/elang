@@ -6,6 +6,20 @@
 let message =
   fun s ->
     match s with
+    | 10 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 11 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 14 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 3 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 4 ->
+        "Expected an argument name following this type\n"
+    | 25 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 26 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 1 ->
         "Expected to find a declaration here after 'let'\n"
     | 2 ->
