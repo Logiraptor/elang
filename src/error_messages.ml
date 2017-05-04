@@ -16,9 +16,9 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 4 ->
         "Expected an argument name following this type\n"
-    | 25 ->
+    | 27 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 26 ->
+    | 28 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 1 ->
         "Expected to find a declaration here after 'let'\n"

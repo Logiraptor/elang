@@ -34,4 +34,5 @@ value:
   | i = INT { Ast.Int i }
   | id=ID {Ast.ID id}
   | a=value PLUS b=value {Ast.BinOp (Ast.Add, a, b)}
+  | a=value EQUAL b=value {Ast.BinOp (Ast.Equal, a, b)}  
   | f=value LPAREN p=params RPAREN {Ast.Apply (f, p) }

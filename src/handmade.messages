@@ -36,7 +36,7 @@ Expected to find a declaration here after 'let'
 
 prog: LET ID LPAREN ID ID COMMA RPAREN 
 ##
-## Ends in an error in state: 26.
+## Ends in an error in state: 28.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg COMMA . separated_nonempty_list(COMMA,arg) [ RPAREN ]
 ##
@@ -48,7 +48,7 @@ prog: LET ID LPAREN ID ID COMMA RPAREN
 
 prog: LET ID LPAREN ID ID LPAREN 
 ##
-## Ends in an error in state: 25.
+## Ends in an error in state: 27.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg . [ RPAREN ]
 ## separated_nonempty_list(COMMA,arg) -> arg . COMMA separated_nonempty_list(COMMA,arg) [ RPAREN ]
@@ -88,8 +88,9 @@ prog: LET ID LPAREN RPAREN EQUAL INT RPAREN
 ## Ends in an error in state: 14.
 ##
 ## func -> LET ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
-## value -> value . PLUS value [ PLUS LPAREN LET EOF ]
-## value -> value . LPAREN params RPAREN [ PLUS LPAREN LET EOF ]
+## value -> value . PLUS value [ PLUS LPAREN LET EQUAL EOF ]
+## value -> value . EQUAL value [ PLUS LPAREN LET EQUAL EOF ]
+## value -> value . LPAREN params RPAREN [ PLUS LPAREN LET EQUAL EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET ID LPAREN args RPAREN EQUAL value 

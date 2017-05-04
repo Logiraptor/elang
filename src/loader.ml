@@ -4,7 +4,8 @@ open Printf
 
 type typ = 
   | Int
-  | Arrow of (typ * typ)
+  | Bool
+  | Arrow of (typ list * typ)
 
 type inner_module = {
   ast : Ast.ast;
@@ -21,7 +22,6 @@ struct
 
   let type_check m =
     Ok {ast = m; types = Ast.SymbolTable.empty}
-
 
   let load_module filename =
     let open Result in
