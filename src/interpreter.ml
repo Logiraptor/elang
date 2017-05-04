@@ -1,20 +1,27 @@
 open Sexplib.Std
-
-(*let add_target_triple triple llm =
-  Llvm_X86.initialize ();
-  let lltarget  = Llvm_target.Target.by_triple triple in
-  let llmachine = Llvm_target.TargetMachine.create ~triple:triple lltarget in
-  let lldly     = Llvm_target.TargetMachine.data_layout llmachine in
-
-  Llvm.set_target_triple (Llvm_target.TargetMachine.triple llmachine) llm ;
-  Llvm.set_data_layout (Llvm_target.DataLayout.as_string lldly) llm ;
-  ()*)
+open Core.Std
 
 
 type value = int [@@deriving sexp]
 type program = Compiler.program
 
+let safe_run (cmd : string) () : (unit, int) Result.t =
+  let exit_status = Sys.command cmd in
+  match exit_status with
+  | 0 -> Result.Ok ()
+  | err -> Result.Error err
+
+let result r =
+  match r with
+  | Ok _ -> Ok 0
+  | Error i -> Error (string_of_int i)
+
 let execute prog =
-  (*let _ = add_target_triple "x86_64" prog in*)
-  let _ = Llvm_bitwriter.write_bitcode_file prog "output.bc" in
-  Result.Ok 9
+  let open Result in
+  let _ = Llvm_bitwriter.write_bitcode_file prog "output.bc" in 
+  safe_run "llc-3.8 output.bc" ()
+  >>= safe_run "gcc -c output.s" 
+  >>= safe_run "gcc -o output output.o"
+  >>= safe_run "rm output.*"    
+  >>= safe_run "./output"
+  |> result

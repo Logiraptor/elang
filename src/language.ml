@@ -45,11 +45,6 @@ module Make
     (Interp : Interpreter with type program = Compile.program) : Language =
 struct
 
-  let (=>) r f =
-    match r with
-    | Ok v -> f v
-    | Error err -> Error err
-
   type value = Interp.value [@@deriving sexp]
 
   let execute filename = 
