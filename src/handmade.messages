@@ -1,42 +1,6 @@
-prog: INT 
+prog: LET ID ID LPAREN ID ID COMMA RPAREN 
 ##
-## Ends in an error in state: 0.
-##
-## prog' -> . prog [ # ]
-##
-## The known suffix of the stack is as follows:
-## 
-##
-
-Hint: Your program should start with a function declaration
-
-prog: LET ID LET 
-##
-## Ends in an error in state: 2.
-##
-## func -> LET ID . LPAREN args RPAREN EQUAL value [ LET EOF ]
-##
-## The known suffix of the stack is as follows:
-## LET ID 
-##
-
-Expected to find argument list
-
-prog: LET LET 
-##
-## Ends in an error in state: 1.
-##
-## func -> LET . ID LPAREN args RPAREN EQUAL value [ LET EOF ]
-##
-## The known suffix of the stack is as follows:
-## LET 
-##
-
-Expected to find a declaration here after 'let'
-
-prog: LET ID LPAREN ID ID COMMA RPAREN 
-##
-## Ends in an error in state: 28.
+## Ends in an error in state: 29.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg COMMA . separated_nonempty_list(COMMA,arg) [ RPAREN ]
 ##
@@ -46,9 +10,9 @@ prog: LET ID LPAREN ID ID COMMA RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN ID ID LPAREN 
+prog: LET ID ID LPAREN ID ID PLUS 
 ##
-## Ends in an error in state: 27.
+## Ends in an error in state: 28.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg . [ RPAREN ]
 ## separated_nonempty_list(COMMA,arg) -> arg . COMMA separated_nonempty_list(COMMA,arg) [ RPAREN ]
@@ -59,9 +23,9 @@ prog: LET ID LPAREN ID ID LPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN ID RPAREN 
+prog: LET ID ID LPAREN ID RPAREN 
 ##
-## Ends in an error in state: 4.
+## Ends in an error in state: 6.
 ##
 ## arg -> ID . typ [ RPAREN COMMA ]
 ##
@@ -69,55 +33,198 @@ prog: LET ID LPAREN ID RPAREN
 ## ID 
 ##
 
-Expected an argument name following this type
+<YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN LPAREN 
+prog: LET ID ID LPAREN PLUS 
 ##
-## Ends in an error in state: 3.
+## Ends in an error in state: 5.
 ##
-## func -> LET ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
+## func -> LET typ ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID LPAREN 
+## LET typ ID LPAREN 
 ##
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN RPAREN EQUAL INT RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL INT INT 
 ##
-## Ends in an error in state: 14.
+## Ends in an error in state: 21.
 ##
-## func -> LET ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
+## value -> value . PLUS value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . EQUAL value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value EQUAL value . [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value EQUAL value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL RPAREN 
+##
+## Ends in an error in state: 20.
+##
+## value -> value EQUAL . value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT COMMA RPAREN 
+##
+## Ends in an error in state: 22.
+##
+## separated_nonempty_list(COMMA,value) -> value COMMA . separated_nonempty_list(COMMA,value) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## value COMMA 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT LET 
+##
+## Ends in an error in state: 19.
+##
+## separated_nonempty_list(COMMA,value) -> value . [ RPAREN ]
+## separated_nonempty_list(COMMA,value) -> value . COMMA separated_nonempty_list(COMMA,value) [ RPAREN ]
+## value -> value . PLUS value [ RPAREN PLUS LPAREN EQUAL COMMA ]
+## value -> value . EQUAL value [ RPAREN PLUS LPAREN EQUAL COMMA ]
+## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN EQUAL COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN PLUS 
+##
+## Ends in an error in state: 18.
+##
+## value -> value LPAREN . params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS INT INT 
+##
+## Ends in an error in state: 17.
+##
+## value -> value . PLUS value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value PLUS value . [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . EQUAL value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value PLUS value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS RPAREN 
+##
+## Ends in an error in state: 16.
+##
+## value -> value PLUS . value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value PLUS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT RPAREN 
+##
+## Ends in an error in state: 15.
+##
+## func -> LET typ ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
 ## value -> value . PLUS value [ PLUS LPAREN LET EQUAL EOF ]
 ## value -> value . EQUAL value [ PLUS LPAREN LET EQUAL EOF ]
 ## value -> value . LPAREN params RPAREN [ PLUS LPAREN LET EQUAL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID LPAREN args RPAREN EQUAL value 
+## LET typ ID LPAREN args RPAREN EQUAL value 
 ##
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN RPAREN EQUAL RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL RPAREN 
+##
+## Ends in an error in state: 12.
+##
+## func -> LET typ ID LPAREN args RPAREN EQUAL . value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET typ ID LPAREN args RPAREN EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN RPAREN 
 ##
 ## Ends in an error in state: 11.
 ##
-## func -> LET ID LPAREN args RPAREN EQUAL . value [ LET EOF ]
+## func -> LET typ ID LPAREN args RPAREN . EQUAL value [ LET EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID LPAREN args RPAREN EQUAL 
+## LET typ ID LPAREN args RPAREN 
 ##
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID LPAREN RPAREN RPAREN 
+prog: LET ID ID RPAREN 
 ##
-## Ends in an error in state: 10.
+## Ends in an error in state: 4.
 ##
-## func -> LET ID LPAREN args RPAREN . EQUAL value [ LET EOF ]
+## func -> LET typ ID . LPAREN args RPAREN EQUAL value [ LET EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID LPAREN args RPAREN 
+## LET typ ID 
 ##
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID RPAREN 
+##
+## Ends in an error in state: 3.
+##
+## func -> LET typ . ID LPAREN args RPAREN EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET typ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET RPAREN 
+##
+## Ends in an error in state: 1.
+##
+## func -> LET . typ ID LPAREN args RPAREN EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: RPAREN 
+##
+## Ends in an error in state: 0.
+##
+## prog' -> . prog [ # ]
+##
+## The known suffix of the stack is as follows:
+## 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+

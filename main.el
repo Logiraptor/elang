@@ -1,9 +1,9 @@
 
 
-let main() = fib(4, 5)
+let int foo(a int) = 4 + a
 
-let fib(x int, y int) = foo(x + 2 + y + 4)
+let int fib(x int, y int) = foo(x + 2 + y + 4)
 
-let foo(a int) = 4 + a
+let int main() = fib(4, 5)
 
-let equal(a int, b int) = a = b
+let bool equal(a int, b int) = a = b

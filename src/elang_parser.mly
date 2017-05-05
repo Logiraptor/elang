@@ -16,7 +16,7 @@ prog:
   | l = nonempty_list(func) EOF { l };
 
 func:
-  | LET id=ID LPAREN a=args RPAREN EQUAL v=value { (id, a, v) };
+  | LET t=typ id=ID LPAREN a=args RPAREN EQUAL v=value { (id, a, v, t) };
 
 args:
   | l = separated_list(COMMA, arg) { l };

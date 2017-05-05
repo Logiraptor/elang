@@ -6,25 +6,41 @@
 let message =
   fun s ->
     match s with
-    | 10 ->
+    | 0 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 11 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 14 ->
+    | 1 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 3 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 4 ->
-        "Expected an argument name following this type\n"
-    | 27 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 11 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 12 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 15 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 16 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 17 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 18 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 19 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 22 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 20 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 21 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 5 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 6 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 28 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 1 ->
-        "Expected to find a declaration here after 'let'\n"
-    | 2 ->
-        "Expected to find argument list\n"
-    | 0 ->
-        "Hint: Your program should start with a function declaration\n"
+    | 29 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | _ ->
         raise Not_found

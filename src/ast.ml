@@ -25,7 +25,7 @@ type typed_symbol =
 [@@deriving sexp]
 
 type func =
-  (symbol * typed_symbol list * expr)
+  (symbol * typed_symbol list * expr * typ)
 [@@deriving sexp]
 
 type prog =

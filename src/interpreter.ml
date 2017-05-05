@@ -5,6 +5,10 @@ open Core.Std
 type value = int [@@deriving sexp]
 type program = Compiler.program
 
+let string_of_value v =
+  sexp_of_value v
+  |> Sexp.to_string_hum
+
 let safe_run (cmd : string) () : (unit, int) Result.t =
   let exit_status = Sys.command cmd in
   match exit_status with

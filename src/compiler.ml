@@ -10,6 +10,8 @@ let i1_t = Llvm.i1_type llctx
 exception UndefinedSymbol of string
 exception UncompilableExpression of string
 
+let string_of_program = Llvm.string_of_llmodule
+
 let pf =
   let open Llvm in
   let i8_t = i8_type llctx in
@@ -74,9 +76,9 @@ let name_args names f args =
   List.fold_left2 (fun names llparam (_, name) ->
       Llvm.set_value_name name llparam;
       Ast.SymbolTable.add names name llparam 
-    ) names (Llvm.params f |> Array.to_list)  args
+    ) names (Llvm.params f |> Array.to_list) args
 
-let generate_func names (name, args, expr) =
+let generate_func names (name, args, expr, _) =
   (*let _ = print_string name; print_newline () in*)
   let Some f = Ast.SymbolTable.find names name in
   let llbuilder = Llvm.builder_at_end llctx (Llvm.entry_block f) in
@@ -88,12 +90,12 @@ let generate_func names (name, args, expr) =
   let _ = Llvm_analysis.assert_valid_function f in
   ()
 
-let generate_func_definition types (name, args, _)  =
+let generate_func_definition types (name, args, _, _)  =
   let etype = Ast.SymbolTable.find_exn types name in
   let ftype = lltype_from_etype etype in
   Llvm.define_function name ftype llm
 
-let add_func_decl types names ((name, args, expr) as f) =
+let add_func_decl types names ((name, args, expr, _) as f) =
   let f = generate_func_definition types f in
   Ast.SymbolTable.add names name f
 

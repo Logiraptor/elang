@@ -17,6 +17,7 @@ end
 module type Loader = sig
   type module_
   val load_module : string -> (module_, string) Result.t
+  val string_of_module : module_ -> string
 end
 
 (*Compiler takes a module and turns it into a program*)
@@ -24,18 +25,22 @@ module type Compiler = sig
   type module_
   type program
   val generate_code : module_ -> (program, string) Result.t
+  val string_of_program : program -> string
 end
 
 (*Interpreter executes a program and results in a value*)
 module type Interpreter = sig
   type program
-  type value [@@deriving sexp]
+  type value
   val execute : program -> (value, string) Result.t
+  val string_of_value : value -> string
 end
 
+module StringMap = Map.Make(String)
+
 module type Language = sig
-  type value [@@deriving sexp]
-  val execute : string -> (value, string) Result.t
+  type value
+  val execute : bool StringMap.t -> string -> (value, string) Result.t
   val string_of_value : value -> string
 end
 
@@ -45,14 +50,30 @@ module Make
     (Interp : Interpreter with type program = Compile.program) : Language =
 struct
 
-  type value = Interp.value [@@deriving sexp]
+  type value = Interp.value
+  type module_ = Compile.module_
+  type program = Interp.program
 
-  let execute filename = 
+  let exec stage stringer print filename =
+    let m = stage filename in
+    Result.map (Result.map m stringer) print_string;
+    print_newline ();
+    m
+
+  let execute options filename = 
+    let print_module = StringMap.find options "print_module" |> Option.value ~default:false in
+    let print_program = StringMap.find options "print_program" |> Option.value ~default:false in
     let open Result in
-    Loader.load_module filename
-    >>= Compile.generate_code
+    exec Loader.load_module Loader.string_of_module print_module filename
+    >>= exec Compile.generate_code Compile.string_of_program print_program
     >>= Interp.execute
 
-  let string_of_value v =
-    sexp_of_value v |> Sexplib.Sexp.to_string_hum
+  let string_of_value =
+    Interp.string_of_value
+
+  let string_of_program =
+    Compile.string_of_program
+
+  let string_of_module =
+    Loader.string_of_module
 end
