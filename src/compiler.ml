@@ -64,10 +64,9 @@ let rec lltype_from_etype (etype : Loader.typ) =
   match etype with
   | Arrow (input, output) -> 
     let args = List.map lltype_from_etype input in
-    Llvm.function_type i32_t (Array.of_list args)
+    Llvm.function_type (lltype_from_etype output) (Array.of_list args)
   | Int -> i32_t
   | Bool -> i1_t
-
 
 let add_arg_decl names (typ, arg) =
   Ast.SymbolTable.add names arg (Llvm.const_int i32_t 0)
