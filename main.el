@@ -1,5 +1,11 @@
 
 
+# let int fact(x int) =
+#     if x = 0 then
+#         1
+#     else
+#         x * fact(x - 1)
+
 let int foo(a int) = 4 + a
 
 let int fib(x int, y int) = foo(x + 2 + y + 4)

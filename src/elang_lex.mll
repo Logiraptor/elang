@@ -29,6 +29,8 @@ let int = '-'? ['0'-'9'] ['0'-'9']*
 
 let id = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'']*
 
+let comment = '#' ([^ '\n']+)
+
 rule read = parse
   | [' ' '\t']+    {read lexbuf}
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
@@ -38,6 +40,7 @@ rule read = parse
   | "("            { LPAREN }
   | ")"            { RPAREN }
   | "+"            { PLUS }
+  | comment        { read lexbuf }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }

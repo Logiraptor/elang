@@ -9,7 +9,7 @@ The general structure of this codebase is as follows:
 
 ## TODO:
 
-linking c functions
+linking c functions (on hold until more builtins exist for `extern` definitions)
     - print_int (builtin)
     - printf (externed)
 
@@ -17,7 +17,6 @@ branches
 sequencing
 
 additional built-ins:
-    - bools
     - strings
     - arrays
     - lambdas
