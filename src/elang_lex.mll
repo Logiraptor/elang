@@ -35,11 +35,16 @@ rule read = parse
   | [' ' '\t']+    {read lexbuf}
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
   | "let"          { LET }
+  | "if"           { IF }
+  | "then"         { THEN }
+  | "else"         { ELSE }
   | "="            { EQUAL }
   | ","            { COMMA }
   | "("            { LPAREN }
   | ")"            { RPAREN }
   | "+"            { PLUS }
+  | "*"            { TIMES }
+  | "-"            { MINUS }
   | comment        { read lexbuf }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }

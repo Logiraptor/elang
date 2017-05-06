@@ -26,6 +26,5 @@ let execute prog =
   safe_run "llc-3.8 output.bc" ()
   >>= safe_run "gcc -c output.s" 
   >>= safe_run "gcc -o output output.o"
-  >>= safe_run "rm output.*"    
-  >>= safe_run "./output"
+  >>= safe_run "rm output.*"
   |> result

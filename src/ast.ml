@@ -6,6 +6,8 @@ type symbol =
 
 type op =
   | Add
+  | Mul
+  | Sub
   | Equal
 [@@deriving sexp]
 
@@ -14,6 +16,7 @@ type expr =
   | ID of symbol
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
+  | If of (expr * expr * expr)
 [@@deriving sexp]
 
 type typ =

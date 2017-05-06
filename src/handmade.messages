@@ -1,6 +1,6 @@
-prog: LET ID ID LPAREN ID ID COMMA RPAREN 
+prog: LET ID ID LPAREN ID ID COMMA TIMES 
 ##
-## Ends in an error in state: 29.
+## Ends in an error in state: 39.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg COMMA . separated_nonempty_list(COMMA,arg) [ RPAREN ]
 ##
@@ -10,9 +10,9 @@ prog: LET ID ID LPAREN ID ID COMMA RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN ID ID PLUS 
+prog: LET ID ID LPAREN ID ID TIMES 
 ##
-## Ends in an error in state: 28.
+## Ends in an error in state: 38.
 ##
 ## separated_nonempty_list(COMMA,arg) -> arg . [ RPAREN ]
 ## separated_nonempty_list(COMMA,arg) -> arg . COMMA separated_nonempty_list(COMMA,arg) [ RPAREN ]
@@ -23,7 +23,7 @@ prog: LET ID ID LPAREN ID ID PLUS
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN ID RPAREN 
+prog: LET ID ID LPAREN ID TIMES 
 ##
 ## Ends in an error in state: 6.
 ##
@@ -35,26 +35,103 @@ prog: LET ID ID LPAREN ID RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN PLUS 
+prog: LET ID ID LPAREN RPAREN EQUAL IF INT RPAREN 
 ##
-## Ends in an error in state: 5.
+## Ends in an error in state: 16.
 ##
-## func -> LET typ ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
+## value -> value . PLUS value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
+## value -> value . TIMES value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
+## value -> value . MINUS value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
+## value -> value . EQUAL value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
+## value -> IF value . THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET typ ID LPAREN 
+## IF value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT ELSE INT INT 
+##
+## Ends in an error in state: 36.
+##
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF value THEN value ELSE value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## IF value THEN value ELSE value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT ELSE TIMES 
+##
+## Ends in an error in state: 35.
+##
+## value -> IF value THEN value ELSE . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## IF value THEN value ELSE 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT THEN 
+##
+## Ends in an error in state: 34.
+##
+## value -> value . PLUS value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
+## value -> value . TIMES value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
+## value -> value . MINUS value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
+## value -> value . EQUAL value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
+## value -> value . LPAREN params RPAREN [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
+## value -> IF value THEN value . ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## IF value THEN value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN TIMES 
+##
+## Ends in an error in state: 33.
+##
+## value -> IF value THEN . value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## IF value THEN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL IF TIMES 
+##
+## Ends in an error in state: 14.
+##
+## value -> IF . value THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## IF 
 ##
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
 prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL INT INT 
 ##
-## Ends in an error in state: 21.
+## Ends in an error in state: 26.
 ##
-## value -> value . PLUS value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value . EQUAL value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value EQUAL value . [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value EQUAL value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value EQUAL value 
@@ -62,11 +139,11 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL INT INT
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL TIMES 
 ##
-## Ends in an error in state: 20.
+## Ends in an error in state: 25.
 ##
-## value -> value EQUAL . value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value EQUAL . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value EQUAL 
@@ -74,9 +151,9 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT COMMA RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT COMMA TIMES 
 ##
-## Ends in an error in state: 22.
+## Ends in an error in state: 27.
 ##
 ## separated_nonempty_list(COMMA,value) -> value COMMA . separated_nonempty_list(COMMA,value) [ RPAREN ]
 ##
@@ -86,15 +163,17 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT COMMA RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT LET 
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT THEN 
 ##
-## Ends in an error in state: 19.
+## Ends in an error in state: 24.
 ##
 ## separated_nonempty_list(COMMA,value) -> value . [ RPAREN ]
 ## separated_nonempty_list(COMMA,value) -> value . COMMA separated_nonempty_list(COMMA,value) [ RPAREN ]
-## value -> value . PLUS value [ RPAREN PLUS LPAREN EQUAL COMMA ]
-## value -> value . EQUAL value [ RPAREN PLUS LPAREN EQUAL COMMA ]
-## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN EQUAL COMMA ]
+## value -> value . PLUS value [ TIMES RPAREN PLUS MINUS LPAREN EQUAL COMMA ]
+## value -> value . TIMES value [ TIMES RPAREN PLUS MINUS LPAREN EQUAL COMMA ]
+## value -> value . MINUS value [ TIMES RPAREN PLUS MINUS LPAREN EQUAL COMMA ]
+## value -> value . EQUAL value [ TIMES RPAREN PLUS MINUS LPAREN EQUAL COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES RPAREN PLUS MINUS LPAREN EQUAL COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value 
@@ -102,11 +181,11 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT LET
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN PLUS 
+prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN TIMES 
 ##
-## Ends in an error in state: 18.
+## Ends in an error in state: 23.
 ##
-## value -> value LPAREN . params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value LPAREN . params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value LPAREN 
@@ -114,14 +193,45 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN PLUS
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
+prog: LET ID ID LPAREN RPAREN EQUAL INT MINUS INT INT 
+##
+## Ends in an error in state: 22.
+##
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value MINUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value MINUS value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT MINUS TIMES 
+##
+## Ends in an error in state: 21.
+##
+## value -> value MINUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value MINUS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
 prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS INT INT 
 ##
-## Ends in an error in state: 17.
+## Ends in an error in state: 20.
 ##
-## value -> value . PLUS value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value PLUS value . [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value . EQUAL value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
-## value -> value . LPAREN params RPAREN [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value PLUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value PLUS value 
@@ -129,11 +239,11 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS INT INT
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS TIMES 
 ##
-## Ends in an error in state: 16.
+## Ends in an error in state: 19.
 ##
-## value -> value PLUS . value [ RPAREN PLUS LPAREN LET EQUAL EOF COMMA ]
+## value -> value PLUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value PLUS 
@@ -141,14 +251,16 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL INT RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT THEN 
 ##
-## Ends in an error in state: 15.
+## Ends in an error in state: 37.
 ##
 ## func -> LET typ ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
-## value -> value . PLUS value [ PLUS LPAREN LET EQUAL EOF ]
-## value -> value . EQUAL value [ PLUS LPAREN LET EQUAL EOF ]
-## value -> value . LPAREN params RPAREN [ PLUS LPAREN LET EQUAL EOF ]
+## value -> value . PLUS value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
+## value -> value . TIMES value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
+## value -> value . MINUS value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
+## value -> value . EQUAL value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
+## value -> value . LPAREN params RPAREN [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID LPAREN args RPAREN EQUAL value 
@@ -156,7 +268,36 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN EQUAL RPAREN 
+prog: LET ID ID LPAREN RPAREN EQUAL INT TIMES INT INT 
+##
+## Ends in an error in state: 18.
+##
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value TIMES value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value TIMES value 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL INT TIMES TIMES 
+##
+## Ends in an error in state: 17.
+##
+## value -> value TIMES . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## value TIMES 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID LPAREN RPAREN EQUAL TIMES 
 ##
 ## Ends in an error in state: 12.
 ##
@@ -168,7 +309,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID LPAREN RPAREN RPAREN 
+prog: LET ID ID LPAREN RPAREN TIMES 
 ##
 ## Ends in an error in state: 11.
 ##
@@ -180,7 +321,19 @@ prog: LET ID ID LPAREN RPAREN RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID ID RPAREN 
+prog: LET ID ID LPAREN TIMES 
+##
+## Ends in an error in state: 5.
+##
+## func -> LET typ ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
+##
+## The known suffix of the stack is as follows:
+## LET typ ID LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID ID TIMES 
 ##
 ## Ends in an error in state: 4.
 ##
@@ -192,7 +345,7 @@ prog: LET ID ID RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET ID RPAREN 
+prog: LET ID TIMES 
 ##
 ## Ends in an error in state: 3.
 ##
@@ -204,7 +357,7 @@ prog: LET ID RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: LET RPAREN 
+prog: LET TIMES 
 ##
 ## Ends in an error in state: 1.
 ##
@@ -216,7 +369,7 @@ prog: LET RPAREN
 
 <YOUR SYNTAX ERROR MESSAGE HERE>
 
-prog: RPAREN 
+prog: TIMES 
 ##
 ## Ends in an error in state: 0.
 ##

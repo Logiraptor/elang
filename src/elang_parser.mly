@@ -1,11 +1,17 @@
 %token <int> INT
 %token <string> ID
 %token LET
+%token IF
+%token THEN
+%token ELSE
 %token EQUAL
 %token COMMA
 %token LPAREN
 %token RPAREN
 %token PLUS
+%token TIMES
+%token MINUS
+
 
 %token EOF
 
@@ -34,5 +40,8 @@ value:
   | i = INT { Ast.Int i }
   | id=ID {Ast.ID id}
   | a=value PLUS b=value {Ast.BinOp (Ast.Add, a, b)}
+  | a=value TIMES b=value {Ast.BinOp (Ast.Mul, a, b)}
+  | a=value MINUS b=value {Ast.BinOp (Ast.Sub, a, b)}
   | a=value EQUAL b=value {Ast.BinOp (Ast.Equal, a, b)}  
   | f=value LPAREN p=params RPAREN {Ast.Apply (f, p) }
+  | IF cond=value THEN conseq=value ELSE alt=value {Ast.If (cond, conseq, alt)}
