@@ -48,5 +48,18 @@ rule read = parse
   | comment        { read lexbuf }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }
+  | '"'
+     { let buffer = Buffer.create 20 in
+       STRING (stringl buffer lexbuf)
+     }
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof            { EOF }
+and stringl buffer = parse
+  | '"' { Buffer.contents buffer }
+  | "\\t" { Buffer.add_char buffer '\t'; stringl buffer lexbuf }
+  | "\\n" { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
+  | "\\n" { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
+  | '\\' '"' { Buffer.add_char buffer '"'; stringl buffer lexbuf }
+  | '\\' '\\' { Buffer.add_char buffer '\\'; stringl buffer lexbuf }
+  | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
+  | eof { raise (SyntaxError ("Unexpected eof inside string")) }

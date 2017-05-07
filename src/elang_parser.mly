@@ -1,5 +1,5 @@
 %token <int> INT
-%token <string> ID
+%token <Ast.symbol> ID
 %token LET
 %token IF
 %token THEN
@@ -11,7 +11,7 @@
 %token PLUS
 %token TIMES
 %token MINUS
-
+%token <string> STRING
 
 %token EOF
 
@@ -39,6 +39,7 @@ params:
 value:
   | i = INT { Ast.Int i }
   | id=ID {Ast.ID id}
+  | str=STRING {Ast.String str}
   | a=value PLUS b=value {Ast.BinOp (Ast.Add, a, b)}
   | a=value TIMES b=value {Ast.BinOp (Ast.Mul, a, b)}
   | a=value MINUS b=value {Ast.BinOp (Ast.Sub, a, b)}

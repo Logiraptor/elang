@@ -7,6 +7,9 @@ let llm = Llvm.create_module llctx "elang.main"
 let i32_t = Llvm.i32_type llctx
 let i1_t = Llvm.i1_type llctx
 
+let i8_t = Llvm.i8_type llctx
+let str_t = Llvm.pointer_type i8_t
+
 exception UndefinedSymbol of string
 exception UncompilableExpression of string
 
@@ -37,6 +40,7 @@ let uncompilable expr =
 let rec generate_expr names llbuilder expr =
   match expr with
   | Ast.Int i -> (Llvm.const_int i32_t i)
+  | Ast.String s -> Llvm.build_global_stringptr s "" llbuilder
   | Ast.BinOp (op, lhs, rhs) ->
     generate_bin_op names llbuilder (op, lhs, rhs)
   | Ast.Apply (Ast.ID f, args) ->
@@ -105,6 +109,7 @@ let rec lltype_from_etype (etype : Loader.typ) =
     Llvm.function_type (lltype_from_etype output) (Array.of_list args)
   | Int -> i32_t
   | Bool -> i1_t
+  | String -> str_t
 
 let add_arg_decl names (typ, arg) =
   Ast.SymbolTable.add names arg (Llvm.const_int i32_t 0)

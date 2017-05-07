@@ -14,6 +14,7 @@ type op =
 type expr = 
   | Int of int
   | ID of symbol
+  | String of string
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
   | If of (expr * expr * expr)

@@ -20,13 +20,11 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 12 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 17 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 18 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 37 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 19 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 38 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 20 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
@@ -38,15 +36,15 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 24 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 27 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 25 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 28 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 26 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 14 ->
+    | 27 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 33 ->
+    | 15 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 34 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
@@ -54,13 +52,15 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 36 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 16 ->
+    | 37 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 17 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 6 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 38 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 39 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 40 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | _ ->
         raise Not_found

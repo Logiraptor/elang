@@ -5,6 +5,7 @@ open Printf
 type typ = 
   | Int
   | Bool
+  | String
   | Arrow of (typ list * typ)
 [@@deriving sexp]
 
@@ -27,8 +28,9 @@ struct
 
   let convert_type_id (Ast.NamedType s) =
     match s with
-    | "int" -> Int
+    | "i32" -> Int
     | "bool" -> Bool
+    | "str" -> String
     | _ -> raise (UndefinedSymbol s)
 
   let string_of_type t =
@@ -46,6 +48,7 @@ struct
        | None -> raise (UndefinedSymbol id)
        | Some x -> x)
     | Ast.Int _ -> Int
+    | Ast.String _ -> String
     | Ast.Apply (f, args) ->
       (let ftype = type_check_expr types f in
        let argtypes = List.map ~f:(type_check_expr types) args in
