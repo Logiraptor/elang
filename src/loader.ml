@@ -99,8 +99,19 @@ struct
     else
       Ast.SymbolTable.add types name expected_ftype
 
+  let type_check_extern types (name, args, rtype) =
+    let arg_type (t, _) = convert_type_id t in
+    let expected_rtype = convert_type_id rtype in
+    let expected_ftype = Arrow (List.map ~f:arg_type args, expected_rtype) in
+    Ast.SymbolTable.add types name expected_ftype
+
+  let type_check_decl types decl =
+    match decl with
+    | Ast.FuncDecl f -> type_check_funcs types f
+    | Ast.ExternDecl e -> type_check_extern types e
+
   let type_check (m : Ast.ast) =
-    let ftypes = List.fold_left ~init:Ast.SymbolTable.empty ~f:type_check_funcs m in
+    let ftypes = List.fold_left ~init:Ast.SymbolTable.empty ~f:type_check_decl m in
     Ok {ast = m; types = ftypes}
 
   let load_module filename =

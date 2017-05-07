@@ -132,19 +132,34 @@ let generate_func names (name, args, expr, _) =
   let _ = Llvm_analysis.assert_valid_function f in
   ()
 
-let generate_func_definition types (name, args, _, _)  =
-  let etype = Ast.SymbolTable.find_exn types name in
-  let ftype = lltype_from_etype etype in
-  Llvm.define_function name ftype llm
+let generate_decl names decl =
+  match decl with
+  | Ast.FuncDecl f -> generate_func names f
+  | Ast.ExternDecl e -> ()
 
-let add_func_decl types names ((name, args, expr, _) as f) =
-  let f = generate_func_definition types f in
+let ast_func_to_lltype types name args =
+  let etype = Ast.SymbolTable.find_exn types name in
+  lltype_from_etype etype
+
+let add_func_decl types names (name, args, expr, _) =
+  let ftype = ast_func_to_lltype types name args in
+  let f = Llvm.define_function name ftype llm in
   Ast.SymbolTable.add names name f
+
+let add_extern_decl types names (name, args, _) =
+  let ftype = ast_func_to_lltype types name args in
+  let f = Llvm.declare_function name ftype llm in
+  Ast.SymbolTable.add names name f
+
+let add_decl types names decl =
+  match decl with
+  | Ast.FuncDecl f -> add_func_decl types names f
+  | Ast.ExternDecl e -> add_extern_decl types names e
 
 let generate_code m =
   let open Loader in
-  let names = List.fold_left (add_func_decl m.types) Ast.SymbolTable.empty m.ast in
-  let _ = List.iter (generate_func names) m.ast in
+  let names = List.fold_left (add_decl m.types) Ast.SymbolTable.empty m.ast in
+  let _ = List.iter (generate_decl names) m.ast in
   let _ = Llvm_analysis.assert_valid_module llm in
   let _ = Llvm.dump_module llm in
   Result.Ok llm

@@ -44,7 +44,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF INT RPAREN
 ## value -> value . MINUS value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
 ## value -> value . EQUAL value [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
 ## value -> value . LPAREN params RPAREN [ TIMES THEN PLUS MINUS LPAREN EQUAL ]
-## value -> IF value . THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF value . THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF value 
@@ -56,12 +56,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT ELSE INT INT
 ##
 ## Ends in an error in state: 37.
 ##
-## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> IF value THEN value ELSE value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> IF value THEN value ELSE value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF value THEN value ELSE value 
@@ -73,7 +73,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT ELSE TIMES
 ##
 ## Ends in an error in state: 36.
 ##
-## value -> IF value THEN value ELSE . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF value THEN value ELSE . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF value THEN value ELSE 
@@ -90,7 +90,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN INT THEN
 ## value -> value . MINUS value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
 ## value -> value . EQUAL value [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
 ## value -> value . LPAREN params RPAREN [ TIMES PLUS MINUS LPAREN EQUAL ELSE ]
-## value -> IF value THEN value . ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF value THEN value . ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF value THEN value 
@@ -102,7 +102,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF INT THEN TIMES
 ##
 ## Ends in an error in state: 34.
 ##
-## value -> IF value THEN . value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF value THEN . value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF value THEN 
@@ -114,7 +114,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL IF TIMES
 ##
 ## Ends in an error in state: 15.
 ##
-## value -> IF . value THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> IF . value THEN value ELSE value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## IF 
@@ -126,12 +126,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL INT INT
 ##
 ## Ends in an error in state: 27.
 ##
-## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value EQUAL value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value EQUAL value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value EQUAL value 
@@ -143,7 +143,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT EQUAL TIMES
 ##
 ## Ends in an error in state: 26.
 ##
-## value -> value EQUAL . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value EQUAL . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value EQUAL 
@@ -185,7 +185,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN TIMES
 ##
 ## Ends in an error in state: 24.
 ##
-## value -> value LPAREN . params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value LPAREN . params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value LPAREN 
@@ -197,12 +197,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT MINUS INT INT
 ##
 ## Ends in an error in state: 23.
 ##
-## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value MINUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value MINUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value MINUS value 
@@ -214,7 +214,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT MINUS TIMES
 ##
 ## Ends in an error in state: 22.
 ##
-## value -> value MINUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value MINUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value MINUS 
@@ -226,12 +226,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS INT INT
 ##
 ## Ends in an error in state: 21.
 ##
-## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value PLUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value PLUS value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value PLUS value 
@@ -243,7 +243,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT PLUS TIMES
 ##
 ## Ends in an error in state: 20.
 ##
-## value -> value PLUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value PLUS . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value PLUS 
@@ -255,12 +255,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT THEN
 ##
 ## Ends in an error in state: 38.
 ##
-## func -> LET typ ID LPAREN args RPAREN EQUAL value . [ LET EOF ]
-## value -> value . PLUS value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
-## value -> value . TIMES value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
-## value -> value . MINUS value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
-## value -> value . EQUAL value [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
-## value -> value . LPAREN params RPAREN [ TIMES PLUS MINUS LPAREN LET EQUAL EOF ]
+## func -> LET typ ID LPAREN args RPAREN EQUAL value . [ LET EXTERN EOF ]
+## value -> value . PLUS value [ TIMES PLUS MINUS LPAREN LET EXTERN EQUAL EOF ]
+## value -> value . TIMES value [ TIMES PLUS MINUS LPAREN LET EXTERN EQUAL EOF ]
+## value -> value . MINUS value [ TIMES PLUS MINUS LPAREN LET EXTERN EQUAL EOF ]
+## value -> value . EQUAL value [ TIMES PLUS MINUS LPAREN LET EXTERN EQUAL EOF ]
+## value -> value . LPAREN params RPAREN [ TIMES PLUS MINUS LPAREN LET EXTERN EQUAL EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID LPAREN args RPAREN EQUAL value 
@@ -272,12 +272,12 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT TIMES INT INT
 ##
 ## Ends in an error in state: 19.
 ##
-## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value TIMES value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
-## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value . PLUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . TIMES value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value TIMES value . [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . MINUS value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . EQUAL value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
+## value -> value . LPAREN params RPAREN [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value TIMES value 
@@ -289,7 +289,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT TIMES TIMES
 ##
 ## Ends in an error in state: 18.
 ##
-## value -> value TIMES . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EQUAL EOF ELSE COMMA ]
+## value -> value TIMES . value [ TIMES THEN RPAREN PLUS MINUS LPAREN LET EXTERN EQUAL EOF ELSE COMMA ]
 ##
 ## The known suffix of the stack is as follows:
 ## value TIMES 
@@ -301,7 +301,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL TIMES
 ##
 ## Ends in an error in state: 12.
 ##
-## func -> LET typ ID LPAREN args RPAREN EQUAL . value [ LET EOF ]
+## func -> LET typ ID LPAREN args RPAREN EQUAL . value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID LPAREN args RPAREN EQUAL 
@@ -313,7 +313,7 @@ prog: LET ID ID LPAREN RPAREN TIMES
 ##
 ## Ends in an error in state: 11.
 ##
-## func -> LET typ ID LPAREN args RPAREN . EQUAL value [ LET EOF ]
+## func -> LET typ ID LPAREN args RPAREN . EQUAL value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID LPAREN args RPAREN 
@@ -325,7 +325,7 @@ prog: LET ID ID LPAREN TIMES
 ##
 ## Ends in an error in state: 5.
 ##
-## func -> LET typ ID LPAREN . args RPAREN EQUAL value [ LET EOF ]
+## func -> LET typ ID LPAREN . args RPAREN EQUAL value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID LPAREN 
@@ -337,7 +337,7 @@ prog: LET ID ID TIMES
 ##
 ## Ends in an error in state: 4.
 ##
-## func -> LET typ ID . LPAREN args RPAREN EQUAL value [ LET EOF ]
+## func -> LET typ ID . LPAREN args RPAREN EQUAL value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ ID 
@@ -349,7 +349,7 @@ prog: LET ID TIMES
 ##
 ## Ends in an error in state: 3.
 ##
-## func -> LET typ . ID LPAREN args RPAREN EQUAL value [ LET EOF ]
+## func -> LET typ . ID LPAREN args RPAREN EQUAL value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET typ 
@@ -361,7 +361,7 @@ prog: LET TIMES
 ##
 ## Ends in an error in state: 1.
 ##
-## func -> LET . typ ID LPAREN args RPAREN EQUAL value [ LET EOF ]
+## func -> LET . typ ID LPAREN args RPAREN EQUAL value [ LET EXTERN EOF ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET 

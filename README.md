@@ -10,7 +10,7 @@ The general structure of this codebase is as follows:
 ## TODO:
 
 Small goal
-make strings a thing
+make externs a thing
 
 Medium goal
 make `printf("Hello, %d!", 42)` valid elang

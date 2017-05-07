@@ -32,8 +32,17 @@ type func =
   (symbol * typed_symbol list * expr * typ)
 [@@deriving sexp]
 
+type extern =
+  (symbol * typed_symbol list * typ)
+[@@deriving sexp]
+
+type decl =
+  | FuncDecl of func
+  | ExternDecl of extern
+[@@deriving sexp]
+
 type prog =
-  func list
+  decl list
 [@@deriving sexp]
 
 type ast =

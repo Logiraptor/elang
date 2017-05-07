@@ -38,6 +38,7 @@ rule read = parse
   | "if"           { IF }
   | "then"         { THEN }
   | "else"         { ELSE }
+  | "extern"       { EXTERN }
   | "="            { EQUAL }
   | ","            { COMMA }
   | "("            { LPAREN }

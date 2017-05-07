@@ -12,6 +12,7 @@
 %token TIMES
 %token MINUS
 %token <string> STRING
+%token EXTERN
 
 %token EOF
 
@@ -19,7 +20,14 @@
 %%
 
 prog:
-  | l = nonempty_list(func) EOF { l };
+  | l = nonempty_list(decl) EOF { l };
+
+decl:
+  | f=func { Ast.FuncDecl f }
+  | e=extern { Ast.ExternDecl e }
+
+extern:
+  | EXTERN t=typ id=ID LPAREN a=args RPAREN { (id, a, t) }
 
 func:
   | LET t=typ id=ID LPAREN a=args RPAREN EQUAL v=value { (id, a, v, t) };
