@@ -16,7 +16,7 @@ type inner_module = {
 
 module Make
     (FR : Language.FileResolver)
-    (P : Language.Parser with type ast = Ast.ast and type filetype = FR.filetype) = 
+    (P : Language.Parser with type ast = Ast.ast and type filetype = FR.filetype) =
 struct
 
   type module_ = inner_module
@@ -87,9 +87,15 @@ struct
     | Ast.Let (name, value, body) ->
       (let valType = type_check_expr types value in
        let localTypes = Ast.SymbolTable.add types name valType in
-       type_check_expr localTypes body
-      )
+       type_check_expr localTypes body)
     | expr -> raise (UntypecheckableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
+
+  let rec identify_tail_calls expr =
+    match expr with
+    | Ast.Let (name, value, body) -> Ast.Let (name, value, identify_tail_calls body)
+    | Ast.If (cond, conseq, alt) -> Ast.If (cond, identify_tail_calls conseq, identify_tail_calls alt)
+    | Ast.Apply (f, args) -> Ast.TailApply (f, args)
+    | expr -> expr
 
   let type_check_arg (types : typemap) ((typ, sym) : Ast.typed_symbol) : typemap =
     Ast.SymbolTable.add types sym (convert_type_id typ)
@@ -117,9 +123,18 @@ struct
     | Ast.FuncDecl f -> type_check_funcs types f
     | Ast.ExternDecl e -> type_check_extern types e
 
+  let transform_decl (f : Ast.expr -> Ast.expr) (d : Ast.decl) =
+    match d with
+    | Ast.FuncDecl (name, args, body, rtype) -> Ast.FuncDecl (name, args, f body, rtype)
+    | Ast.ExternDecl e -> Ast.ExternDecl e
+
+  let transform_ast (f : Ast.expr -> Ast.expr) (m : Ast.ast) =
+    List.map m (transform_decl f)
+
   let type_check (m : Ast.ast) =
     let ftypes = List.fold_left ~init:Ast.SymbolTable.empty ~f:type_check_decl m in
-    Ok {ast = m; types = ftypes}
+    let out = transform_ast identify_tail_calls m in
+    Ok {ast = out; types = ftypes}
 
   let load_module filename =
     let open Result in

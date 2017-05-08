@@ -44,24 +44,28 @@ let rec generate_expr names llbuilder expr =
   | Ast.BinOp (op, lhs, rhs) ->
     generate_bin_op names llbuilder (op, lhs, rhs)
   | Ast.Apply (Ast.ID f, args) ->
-    let callee =
-      (match Llvm.lookup_function f llm with
-       | Some callee -> callee
-       | None -> raise (UndefinedSymbol (Printf.sprintf "no such function %s" f))) in
-    let args = List.map (generate_expr names llbuilder) args in
-    Llvm.build_call callee (Array.of_list args) "calltmp" llbuilder
-
+    generate_call names llbuilder (Ast.ID f) args
+  | Ast.TailApply (Ast.ID f, args) ->
+    let call = generate_call names llbuilder (Ast.ID f) args in
+    let _ = Llvm.set_tail_call true call in
+    call
   | Ast.ID i -> 
     (match Ast.SymbolTable.find names i with
      | None -> raise (UndefinedSymbol (Printf.sprintf "no such variable %s" i))
      | Some x -> x)
   | Ast.If (cond, conseq, alt) -> generate_branch names llbuilder (cond, conseq, alt)
   | Ast.Let (name, value, body) ->
-    (let value = generate_expr names llbuilder value in
-     let localNames = Ast.SymbolTable.add names name value in
-     generate_expr localNames llbuilder body
-    )
+    let value = generate_expr names llbuilder value in
+    let localNames = Ast.SymbolTable.add names name value in
+    generate_expr localNames llbuilder body
   | expr -> uncompilable expr
+and generate_call names llbuilder (Ast.ID f) args =
+  let callee =
+    (match Llvm.lookup_function f llm with
+     | Some callee -> callee
+     | None -> raise (UndefinedSymbol (Printf.sprintf "no such function %s" f))) in
+  let args = List.map (generate_expr names llbuilder) args in
+  Llvm.build_call callee (Array.of_list args) "calltmp" llbuilder
 and generate_bin_op names llbuilder (op, lhs, rhs) =
   let lhs = generate_expr names llbuilder lhs in
   let rhs =  generate_expr names llbuilder rhs in

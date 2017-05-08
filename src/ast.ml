@@ -19,6 +19,7 @@ type expr =
   | String of string
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
+  | TailApply of (expr * expr list)
   | If of (expr * expr * expr)
   | Let of (symbol * expr * expr)
 [@@deriving sexp]
