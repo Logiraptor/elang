@@ -1,5 +1,7 @@
 # ELANG
 
+Functional language optimized for speed of execution
+
 The general structure of this codebase is as follows:
 
 1. Parser (Menhir) (Source text -> AST | ParseError)
@@ -10,21 +12,22 @@ The general structure of this codebase is as follows:
 ## TODO:
 
 Small goal
-
+structure definition
+structure construction
 
 Medium goal
+functional structure update (copy on write)
 
 Big goal:
-make `printf("Hello, %d!", 42)` valid elang
-general `extern` functionality for integration with libc
+compound structure support (arrays / structs)
+
+automatic reference counting gc
 
 High quality error messages outside of parsing. (General error marshalling module)
 
 linking c functions (on hold until more builtins exist for `extern` definitions)
     - print_int (builtin)
     - printf (externed)
-
-sequencing (let bindings most likely)
 
 additional built-ins:
     - arrays
