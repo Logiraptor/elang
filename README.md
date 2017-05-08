@@ -10,13 +10,15 @@ The general structure of this codebase is as follows:
 ## TODO:
 
 Small goal
-make externs a thing
+
 
 Medium goal
-make `printf("Hello, %d!", 42)` valid elang
 
 Big goal:
+make `printf("Hello, %d!", 42)` valid elang
 general `extern` functionality for integration with libc
+
+High quality error messages outside of parsing. (General error marshalling module)
 
 linking c functions (on hold until more builtins exist for `extern` definitions)
     - print_int (builtin)
@@ -25,7 +27,6 @@ linking c functions (on hold until more builtins exist for `extern` definitions)
 sequencing (let bindings most likely)
 
 additional built-ins:
-    - strings
     - arrays
     - structures
     - lambdas

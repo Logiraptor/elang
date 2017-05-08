@@ -8,7 +8,9 @@ type op =
   | Add
   | Mul
   | Sub
+  | Mod
   | Equal
+  | And
 [@@deriving sexp]
 
 type expr = 
@@ -18,6 +20,7 @@ type expr =
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
   | If of (expr * expr * expr)
+  | Let of (symbol * expr * expr)
 [@@deriving sexp]
 
 type typ =

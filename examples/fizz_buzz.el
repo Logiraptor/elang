@@ -1,10 +1,5 @@
-
-extern i32 strlen(s str)
-extern str malloc(size i32)
-extern str strcpy(dst str, src str)
-extern i32 puts(s str)
-extern str gets(s str)
 # we can define a limited version of printf that only works for one i32
+extern i32 puts(s str)
 extern i32 printf(s str, d i32)
 
 let i32 print_int(x i32) =

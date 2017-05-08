@@ -14,7 +14,7 @@ exception UndefinedSymbol of string
 exception UncompilableExpression of string
 
 let string_of_program = Llvm.string_of_llmodule
-
+(*
 let pf =
   let open Llvm in
   let i8_t = i8_type llctx in
@@ -23,16 +23,16 @@ let pf =
   let printf = declare_function "printf" printf_ty llm in
   add_function_attr printf Attribute.Nounwind ;
   add_param_attr (param printf 0) Attribute.Nocapture ;
-  printf
+  printf*)
 
 
-let add_hello_world llbuilder = 
+(*let add_hello_world llbuilder = 
   let open Llvm in
   let s = build_global_stringptr "Hello, world!\n" "" llbuilder in
   let zero = const_int i32_t 0 in
   let s = build_in_bounds_gep s [| zero |] "" llbuilder in
   let _ = build_call pf [| s |] "" llbuilder in
-  ()
+  ()*)
 
 let uncompilable expr =
   raise (UncompilableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
@@ -56,6 +56,11 @@ let rec generate_expr names llbuilder expr =
      | None -> raise (UndefinedSymbol (Printf.sprintf "no such variable %s" i))
      | Some x -> x)
   | Ast.If (cond, conseq, alt) -> generate_branch names llbuilder (cond, conseq, alt)
+  | Ast.Let (name, value, body) ->
+    (let value = generate_expr names llbuilder value in
+     let localNames = Ast.SymbolTable.add names name value in
+     generate_expr localNames llbuilder body
+    )
   | expr -> uncompilable expr
 and generate_bin_op names llbuilder (op, lhs, rhs) =
   let lhs = generate_expr names llbuilder lhs in
@@ -64,7 +69,9 @@ and generate_bin_op names llbuilder (op, lhs, rhs) =
   | Ast.Add -> Llvm.build_add lhs rhs "addtmp" llbuilder
   | Ast.Mul -> Llvm.build_mul lhs rhs "multmp" llbuilder
   | Ast.Sub -> Llvm.build_sub lhs rhs "subtmp" llbuilder
+  | Ast.Mod -> Llvm.build_srem lhs rhs "modtmp" llbuilder
   | Ast.Equal -> Llvm.build_icmp Llvm.Icmp.Eq lhs rhs "eqltmp" llbuilder
+  | Ast.And -> Llvm.build_and lhs rhs "andtmp" llbuilder
 and generate_branch names llbuilder (cond, conseq, alt) =
   let cond = generate_expr names llbuilder cond in
   let start_bb = Llvm.insertion_block llbuilder in

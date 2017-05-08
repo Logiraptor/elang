@@ -20,47 +20,47 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 12 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 18 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 19 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 38 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 20 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 21 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 22 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 48 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 25 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 26 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 29 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 30 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 23 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 24 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 25 ->
+    | 33 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 28 ->
+    | 31 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 26 ->
+    | 32 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 27 ->
+    | 18 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 15 ->
+    | 41 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 34 ->
+    | 42 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 35 ->
+    | 43 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 36 ->
+    | 44 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 37 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 17 ->
+    | 20 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 6 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 39 ->
+    | 49 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 40 ->
+    | 50 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | _ ->
         raise Not_found

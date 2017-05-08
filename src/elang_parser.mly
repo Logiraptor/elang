@@ -1,6 +1,7 @@
 %token <int> INT
 %token <Ast.symbol> ID
 %token LET
+%token IN
 %token IF
 %token THEN
 %token ELSE
@@ -11,8 +12,19 @@
 %token PLUS
 %token TIMES
 %token MINUS
+%token MOD
 %token <string> STRING
 %token EXTERN
+%token AND
+
+%right ELSE
+%right IN
+%left AND
+%left EQUAL
+%left PLUS MINUS
+%left MOD
+%left TIMES
+%right LPAREN
 
 %token EOF
 
@@ -48,9 +60,15 @@ value:
   | i = INT { Ast.Int i }
   | id=ID {Ast.ID id}
   | str=STRING {Ast.String str}
-  | a=value PLUS b=value {Ast.BinOp (Ast.Add, a, b)}
-  | a=value TIMES b=value {Ast.BinOp (Ast.Mul, a, b)}
-  | a=value MINUS b=value {Ast.BinOp (Ast.Sub, a, b)}
-  | a=value EQUAL b=value {Ast.BinOp (Ast.Equal, a, b)}  
+  | a=value o=op b=value {Ast.BinOp (o, a, b)}  
   | f=value LPAREN p=params RPAREN {Ast.Apply (f, p) }
   | IF cond=value THEN conseq=value ELSE alt=value {Ast.If (cond, conseq, alt)}
+  | LET name=ID EQUAL v=value IN body=value {Ast.Let (name, v, body)}
+
+%inline op:
+  | PLUS {Ast.Add}
+  | TIMES {Ast.Mul}
+  | MINUS {Ast.Sub}
+  | MOD {Ast.Mod}
+  | EQUAL {Ast.Equal}
+  | AND {Ast.And}

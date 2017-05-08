@@ -68,8 +68,10 @@ struct
        | (Ast.Sub, Int, Int) -> Int
        | (Ast.Mul, Int, Int) -> Int
        | (Ast.Equal, Int, Int) -> Bool
+       | (Ast.Mod, Int, Int) -> Int
+       | (Ast.And, Bool, Bool) -> Bool
        | (otherOp, Int, Int) -> raise (TypeError (Printf.sprintf !"undefined operator %{Sexp#hum}" (Ast.sexp_of_op otherOp)))
-       | other -> raise (TypeError (Printf.sprintf !"argument type mismatch: expected (Int, Int) got %{string_of_type_list}" [lhstype; rhstype])))
+       | other -> raise (TypeError (Printf.sprintf !"argument type mismatch: got %{string_of_type_list}" [lhstype; rhstype])))
     | Ast.If (cond, conseq, alt) ->
       (let condType = type_check_expr types cond in
        let conseqType = type_check_expr types conseq in
@@ -81,6 +83,11 @@ struct
          raise (TypeError (Printf.sprintf !"condition type: expected Bool got %{string_of_type}" condType))
        else
          conseqType
+      )
+    | Ast.Let (name, value, body) ->
+      (let valType = type_check_expr types value in
+       let localTypes = Ast.SymbolTable.add types name valType in
+       type_check_expr localTypes body
       )
     | expr -> raise (UntypecheckableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
 

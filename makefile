@@ -5,7 +5,7 @@ buildDate = $(shell date)
 
 oce = opam config exec --
 
-buildCmd = $(oce) ocamlbuild -use-ocamlfind -tag thread -menhir "menhir --table"
+buildCmd = $(oce) ocamlbuild -use-ocamlfind -tag thread -menhir "menhir --table --strict --explain --dump"
 
 locker = docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) ocaml-core
 
