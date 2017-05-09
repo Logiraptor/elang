@@ -41,6 +41,8 @@ rule read = parse
   | "then"         { THEN }
   | "else"         { ELSE }
   | "extern"       { EXTERN }
+  | "struct"       { STRUCT }
+  | ";"            { SEMICOLON }
   | "="            { EQUAL }
   | ","            { COMMA }
   | "("            { LPAREN }

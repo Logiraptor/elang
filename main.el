@@ -3,6 +3,8 @@ type bool = i1
 type char = i8
 type int = i32
 
+type managed_string = struct(data str, len i32)
+
 extern int strlen(s str)
 extern str malloc(size int)
 extern str strcpy(dst str, src str)
@@ -11,6 +13,8 @@ extern str gets(s str)
 # we can define a limited version of printf that only works for one int
 extern int printf(s str, d int)
 
+let int print_str(s managed_string) =
+    puts("Hi")
 
 let int print_int(x int) =
     printf("%d\n", x)

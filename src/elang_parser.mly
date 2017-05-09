@@ -17,6 +17,8 @@
 %token EXTERN
 %token TYPE
 %token AND
+%token STRUCT
+%token SEMICOLON
 
 %right ELSE
 %right IN
@@ -56,7 +58,8 @@ arg:
   | id=ID t=typ { (t,id) };
 
 typ:
-  | id=ID { Ast.NamedType id };
+  | id=ID { Ast.NamedType id }
+  | STRUCT LPAREN a=args RPAREN { Ast.StructType a }
 
 params:
   | l=separated_list(COMMA, value) { l };

@@ -122,6 +122,10 @@ let rec lltype_from_etype (etype : Loader.typ) =
   | Char -> i8_t
   | Bool -> i1_t
   | String -> str_t
+  | Struct fields ->
+    let typ_of (t, _) = lltype_from_etype t in
+    let arg_types = List.map typ_of fields in
+    Llvm.struct_type llctx (Array.of_list arg_types)
 
 let add_arg_decl names (typ, arg) =
   Ast.SymbolTable.add names arg (Llvm.const_int i32_t 0)

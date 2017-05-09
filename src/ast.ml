@@ -26,10 +26,11 @@ type expr =
 
 type typ =
   | NamedType of symbol
+  | StructType of typed_symbol list
 [@@deriving sexp]
 
-type typed_symbol =
-  (typ * symbol)
+and typed_symbol =
+    (typ * symbol)
 [@@deriving sexp]
 
 type func =

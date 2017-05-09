@@ -7,9 +7,13 @@ type typ =
   | Char
   | Bool
   | String
+  | Struct of typed_symbol list
   | Arrow of (typ list * typ)
 [@@deriving sexp]
 
+and typed_symbol =
+    (typ * Ast.symbol)
+[@@deriving sexp]
 
 type typemap = typ Ast.SymbolTable.t [@@deriving sexp]
 
@@ -42,10 +46,17 @@ struct
       ("str", String)
     ]
 
-  let convert_type_id ctx (Ast.NamedType s) =
-    match Ast.SymbolTable.find ctx.types s with
-    | None -> raise (LoaderUndefinedSymbol s)
-    | Some t -> t
+  let rec load_type ctx typ =
+    match typ with
+    | Ast.NamedType s ->
+      (match Ast.SymbolTable.find ctx.types s with
+       | None -> raise (LoaderUndefinedSymbol s)
+       | Some t -> t)
+    | Ast.StructType args ->
+      let convert_arg (t, name) = (load_type ctx t, name) in
+      let new_args = List.map ~f:convert_arg args in
+      Struct new_args
+
 
   let string_of_type t =
     let sexp = sexp_of_typ t in
@@ -112,11 +123,11 @@ struct
     | expr -> expr
 
   let type_check_arg (ctx : ctx) ((typ, sym) : Ast.typed_symbol) : ctx =
-    {ctx with value_types = Ast.SymbolTable.add ctx.value_types sym (convert_type_id ctx typ)}
+    {ctx with value_types = Ast.SymbolTable.add ctx.value_types sym (load_type ctx typ)}
 
   let type_check_funcs (ctx : ctx) ((name, args, body, rtype) : Ast.func) : ctx =
-    let arg_type (t, _) = convert_type_id ctx t in
-    let expected_rtype = convert_type_id ctx rtype in
+    let arg_type (t, _) = load_type ctx t in
+    let expected_rtype = load_type ctx rtype in
     let expected_ftype = Arrow (List.map ~f:arg_type args, expected_rtype) in
     let types_with_self = {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype} in
     let localctx = List.fold_left ~init:types_with_self ~f:type_check_arg args in
@@ -127,8 +138,8 @@ struct
       {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype }
 
   let type_check_extern ctx (name, args, rtype) =
-    let arg_type (t, _) = convert_type_id ctx t in
-    let expected_rtype = convert_type_id ctx rtype in
+    let arg_type (t, _) = load_type ctx t in
+    let expected_rtype = load_type ctx rtype in
     let expected_ftype = Arrow (List.map ~f:arg_type args, expected_rtype) in
     {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype}
 
@@ -146,7 +157,7 @@ struct
 
   let add_user_types (ctx : ctx) (d : Ast.decl) : ctx =
     match d with
-    | Ast.TypeDecl (name, t) -> {ctx with types=Ast.SymbolTable.add ctx.types name (convert_type_id ctx t)}
+    | Ast.TypeDecl (name, t) -> {ctx with types=Ast.SymbolTable.add ctx.types name (load_type ctx t)}
     | d -> ctx
 
   let transform_ast (f : Ast.expr -> Ast.expr) (m : Ast.ast) =
