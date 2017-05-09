@@ -13,9 +13,9 @@ The general structure of this codebase is as follows:
 
 Small goal
 structure definition
-structure construction
 
 Medium goal
+structure construction
 functional structure update (copy on write)
 
 Big goal:

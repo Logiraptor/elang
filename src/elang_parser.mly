@@ -15,6 +15,7 @@
 %token MOD
 %token <string> STRING
 %token EXTERN
+%token TYPE
 %token AND
 
 %right ELSE
@@ -37,12 +38,16 @@ prog:
 decl:
   | f=func { Ast.FuncDecl f }
   | e=extern { Ast.ExternDecl e }
+  | t=typ_decl { Ast.TypeDecl t }
 
 extern:
   | EXTERN t=typ id=ID LPAREN a=args RPAREN { (id, a, t) }
 
 func:
   | LET t=typ id=ID LPAREN a=args RPAREN EQUAL v=value { (id, a, v, t) };
+
+typ_decl:
+  | TYPE id=ID EQUAL t=typ { (id, t) }
 
 args:
   | l = separated_list(COMMA, arg) { l };

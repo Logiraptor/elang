@@ -35,6 +35,7 @@ rule read = parse
   | [' ' '\t']+    {read lexbuf}
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
   | "let"          { LET }
+  | "type"          { TYPE }  
   | "in"           { IN }  
   | "if"           { IF }
   | "then"         { THEN }

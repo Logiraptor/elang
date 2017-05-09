@@ -4,14 +4,23 @@ open Printf
 
 type typ = 
   | Int
+  | Char
   | Bool
   | String
   | Arrow of (typ list * typ)
 [@@deriving sexp]
 
+
+type typemap = typ Ast.SymbolTable.t [@@deriving sexp]
+
+type ctx = {
+  types : typemap;
+  value_types : typemap;
+}[@@deriving sexp]
+
 type inner_module = {
   ast : Ast.ast;
-  types : typ Ast.SymbolTable.t
+  ctx : ctx
 } [@@deriving sexp]
 
 module Make
@@ -20,18 +29,23 @@ module Make
 struct
 
   type module_ = inner_module
-  type typemap = typ Ast.SymbolTable.t
+
   exception UntypecheckableExpression of string
   exception Uncallable of string
   exception TypeError of string
-  exception UndefinedSymbol of string
+  exception LoaderUndefinedSymbol of string
 
-  let convert_type_id (Ast.NamedType s) =
-    match s with
-    | "i32" -> Int
-    | "bool" -> Bool
-    | "str" -> String
-    | _ -> raise (UndefinedSymbol s)
+  let built_in_types = Ast.SymbolTable.of_alist_exn [
+      ("i1", Bool);
+      ("i8", Char);
+      ("i32", Int);
+      ("str", String)
+    ]
+
+  let convert_type_id ctx (Ast.NamedType s) =
+    match Ast.SymbolTable.find ctx.types s with
+    | None -> raise (LoaderUndefinedSymbol s)
+    | Some t -> t
 
   let string_of_type t =
     let sexp = sexp_of_typ t in
@@ -41,17 +55,17 @@ struct
     let strings = List.map ~f:string_of_type types in
     String.concat ~sep:";" strings
 
-  let rec type_check_expr (types : typemap) (expr : Ast.expr) : typ =
+  let rec type_check_expr (ctx : ctx) (expr : Ast.expr) : typ =
     match expr with
     | Ast.ID id -> 
-      (match Ast.SymbolTable.find types id with
-       | None -> raise (UndefinedSymbol id)
+      (match Ast.SymbolTable.find ctx.value_types id with
+       | None -> raise (LoaderUndefinedSymbol id)
        | Some x -> x)
     | Ast.Int _ -> Int
     | Ast.String _ -> String
     | Ast.Apply (f, args) ->
-      (let ftype = type_check_expr types f in
-       let argtypes = List.map ~f:(type_check_expr types) args in
+      (let ftype = type_check_expr ctx f in
+       let argtypes = List.map ~f:(type_check_expr ctx) args in
        match ftype with
        | Arrow (input, output) ->
          if input = argtypes then
@@ -61,8 +75,8 @@ struct
        | t -> raise (Uncallable (sexp_of_typ t |> Sexplib.Sexp.to_string_hum))
       )
     | Ast.BinOp (op, lhs, rhs) ->
-      (let lhstype = type_check_expr types lhs in
-       let rhstype = type_check_expr types rhs in
+      (let lhstype = type_check_expr ctx lhs in
+       let rhstype = type_check_expr ctx rhs in
        match (op, lhstype, rhstype) with
        | (Ast.Add, Int, Int) -> Int
        | (Ast.Sub, Int, Int) -> Int
@@ -73,9 +87,9 @@ struct
        | (otherOp, Int, Int) -> raise (TypeError (Printf.sprintf !"undefined operator %{Sexp#hum}" (Ast.sexp_of_op otherOp)))
        | other -> raise (TypeError (Printf.sprintf !"argument type mismatch: got %{string_of_type_list}" [lhstype; rhstype])))
     | Ast.If (cond, conseq, alt) ->
-      (let condType = type_check_expr types cond in
-       let conseqType = type_check_expr types conseq in
-       let altType = type_check_expr types alt in
+      (let condType = type_check_expr ctx cond in
+       let conseqType = type_check_expr ctx conseq in
+       let altType = type_check_expr ctx alt in
        if conseqType <> altType then
          raise (TypeError (Printf.sprintf !"branch mismatch error: %{string_of_type} is not compatible with %{string_of_type}" conseqType altType))
        else
@@ -85,9 +99,9 @@ struct
          conseqType
       )
     | Ast.Let (name, value, body) ->
-      (let valType = type_check_expr types value in
-       let localTypes = Ast.SymbolTable.add types name valType in
-       type_check_expr localTypes body)
+      (let valType = type_check_expr ctx value in
+       let localctx = {ctx with value_types = Ast.SymbolTable.add ctx.value_types name valType } in
+       type_check_expr localctx body)
     | expr -> raise (UntypecheckableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
 
   let rec identify_tail_calls expr =
@@ -97,44 +111,53 @@ struct
     | Ast.Apply (f, args) -> Ast.TailApply (f, args)
     | expr -> expr
 
-  let type_check_arg (types : typemap) ((typ, sym) : Ast.typed_symbol) : typemap =
-    Ast.SymbolTable.add types sym (convert_type_id typ)
+  let type_check_arg (ctx : ctx) ((typ, sym) : Ast.typed_symbol) : ctx =
+    {ctx with value_types = Ast.SymbolTable.add ctx.value_types sym (convert_type_id ctx typ)}
 
-  let type_check_funcs (types : typemap) ((name, args, body, rtype) : Ast.func) : typemap =
-    let arg_type (t, _) = convert_type_id t in
-    let expected_rtype = convert_type_id rtype in
+  let type_check_funcs (ctx : ctx) ((name, args, body, rtype) : Ast.func) : ctx =
+    let arg_type (t, _) = convert_type_id ctx t in
+    let expected_rtype = convert_type_id ctx rtype in
     let expected_ftype = Arrow (List.map ~f:arg_type args, expected_rtype) in
-    let types_with_self = Ast.SymbolTable.add types name expected_ftype in
-    let localtypes = List.fold_left ~init:types_with_self ~f:type_check_arg args in
-    let body_type = type_check_expr localtypes body in
+    let types_with_self = {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype} in
+    let localctx = List.fold_left ~init:types_with_self ~f:type_check_arg args in
+    let body_type = type_check_expr localctx body in
     if body_type <> expected_rtype then
       raise (TypeError (Printf.sprintf !"return type mismatch: expected %{string_of_type} got %{string_of_type}" expected_rtype body_type))
     else
-      Ast.SymbolTable.add types name expected_ftype
+      {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype }
 
-  let type_check_extern types (name, args, rtype) =
-    let arg_type (t, _) = convert_type_id t in
-    let expected_rtype = convert_type_id rtype in
+  let type_check_extern ctx (name, args, rtype) =
+    let arg_type (t, _) = convert_type_id ctx t in
+    let expected_rtype = convert_type_id ctx rtype in
     let expected_ftype = Arrow (List.map ~f:arg_type args, expected_rtype) in
-    Ast.SymbolTable.add types name expected_ftype
+    {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype}
 
-  let type_check_decl types decl =
+  let type_check_decl (ctx : ctx) decl : ctx =
     match decl with
-    | Ast.FuncDecl f -> type_check_funcs types f
-    | Ast.ExternDecl e -> type_check_extern types e
+    | Ast.FuncDecl f -> type_check_funcs ctx f
+    | Ast.ExternDecl e -> type_check_extern ctx e
+    | Ast.TypeDecl t -> ctx
 
   let transform_decl (f : Ast.expr -> Ast.expr) (d : Ast.decl) =
     match d with
     | Ast.FuncDecl (name, args, body, rtype) -> Ast.FuncDecl (name, args, f body, rtype)
     | Ast.ExternDecl e -> Ast.ExternDecl e
+    | Ast.TypeDecl t -> Ast.TypeDecl t
+
+  let add_user_types (ctx : ctx) (d : Ast.decl) : ctx =
+    match d with
+    | Ast.TypeDecl (name, t) -> {ctx with types=Ast.SymbolTable.add ctx.types name (convert_type_id ctx t)}
+    | d -> ctx
 
   let transform_ast (f : Ast.expr -> Ast.expr) (m : Ast.ast) =
     List.map m (transform_decl f)
 
   let type_check (m : Ast.ast) =
-    let ftypes = List.fold_left ~init:Ast.SymbolTable.empty ~f:type_check_decl m in
+    let ctx = {value_types=Ast.SymbolTable.empty; types=built_in_types} in
+    let user_defined_types = List.fold_left ~init:ctx ~f:add_user_types m in
+    let ftypes = List.fold_left ~init:user_defined_types ~f:type_check_decl m in
     let out = transform_ast identify_tail_calls m in
-    Ok {ast = out; types = ftypes}
+    Ok {ast = out; ctx = ftypes}
 
   let load_module filename =
     let open Result in

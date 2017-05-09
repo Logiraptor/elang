@@ -40,9 +40,14 @@ type extern =
   (symbol * typed_symbol list * typ)
 [@@deriving sexp]
 
+type typ_decl =
+  (symbol * typ)
+[@@deriving sexp]
+
 type decl =
   | FuncDecl of func
   | ExternDecl of extern
+  | TypeDecl of typ_decl
 [@@deriving sexp]
 
 type prog =

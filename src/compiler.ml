@@ -119,6 +119,7 @@ let rec lltype_from_etype (etype : Loader.typ) =
     let args = List.map lltype_from_etype input in
     Llvm.function_type (lltype_from_etype output) (Array.of_list args)
   | Int -> i32_t
+  | Char -> i8_t
   | Bool -> i1_t
   | String -> str_t
 
@@ -147,9 +148,10 @@ let generate_decl names decl =
   match decl with
   | Ast.FuncDecl f -> generate_func names f
   | Ast.ExternDecl e -> ()
+  | Ast.TypeDecl t -> ()
 
 let ast_func_to_lltype types name args =
-  let etype = Ast.SymbolTable.find_exn types name in
+  let Some etype = Ast.SymbolTable.find types name in
   lltype_from_etype etype
 
 let add_func_decl types names (name, args, expr, _) =
@@ -166,10 +168,11 @@ let add_decl types names decl =
   match decl with
   | Ast.FuncDecl f -> add_func_decl types names f
   | Ast.ExternDecl e -> add_extern_decl types names e
+  | Ast.TypeDecl e -> names
 
 let generate_code m =
   let open Loader in
-  let names = List.fold_left (add_decl m.types) Ast.SymbolTable.empty m.ast in
+  let names = List.fold_left (add_decl m.ctx.value_types) Ast.SymbolTable.empty m.ast in
   let _ = List.iter (generate_decl names) m.ast in
   let _ = Llvm_analysis.assert_valid_module llm in
   let _ = Llvm.dump_module llm in
