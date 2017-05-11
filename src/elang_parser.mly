@@ -18,7 +18,8 @@
 %token TYPE
 %token AND
 %token STRUCT
-%token SEMICOLON
+%token DOT
+
 
 %right ELSE
 %right IN
@@ -28,6 +29,7 @@
 %left MOD
 %left TIMES
 %right LPAREN
+%left DOT
 
 %token EOF
 
@@ -65,6 +67,7 @@ params:
   | l=separated_list(COMMA, value) { l };
 
 value:
+  | v=value DOT id=ID {Ast.FieldAccess (v, id) }
   | i = INT { Ast.Int i }
   | id=ID {Ast.ID id}
   | str=STRING {Ast.String str}

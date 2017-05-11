@@ -74,6 +74,16 @@ struct
        | Some x -> x)
     | Ast.Int _ -> Int
     | Ast.String _ -> String
+    | Ast.FieldAccess (v, field) ->
+      (let stype = type_check_expr ctx v in
+       match stype with
+       | Struct fields ->
+         (let with_name name (_, candidate) = candidate = name in
+          let structField = List.find fields ~f:(with_name field) in
+          match structField with 
+          | Some (t, _) -> t
+          | None -> raise (TypeError (Printf.sprintf !"no such field %s in type %{string_of_type}" field stype)))
+       | other -> raise (TypeError (Printf.sprintf !"cannot access field of non-struct type: %{string_of_type}" other)))
     | Ast.Apply (f, args) ->
       (let ftype = type_check_expr ctx f in
        let argtypes = List.map ~f:(type_check_expr ctx) args in

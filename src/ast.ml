@@ -17,6 +17,7 @@ type expr =
   | Int of int
   | ID of symbol
   | String of string
+  | FieldAccess of (expr * symbol)
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
   | TailApply of (expr * expr list)

@@ -34,6 +34,21 @@ let pf =
   let _ = build_call pf [| s |] "" llbuilder in
   ()*)
 
+let rec size_of t =
+  let open Typed_ast in
+  match t with
+  | Int n -> n
+  | String -> 1
+
+let rec get_field_offset structType field start =
+  match structType with
+  | [] -> raise (UncompilableExpression (Printf.sprintf !"no such field %s in struct" field))
+  | (t, name)::rest ->
+    if name = field then
+      start
+    else
+      get_field_offset rest field (start + (size_of t))
+
 let uncompilable expr =
   raise (UncompilableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
 
@@ -58,6 +73,10 @@ let rec generate_expr names llbuilder expr =
     let value = generate_expr names llbuilder value in
     let localNames = Ast.SymbolTable.add names name value in
     generate_expr localNames llbuilder body
+  | Ast.FieldAccess (receiver, field) ->
+    let value = generate_expr names llbuilder receiver in
+    let offset = get_field_offset receiver field in
+    Llvm.build_in_bounds_gep value offset "indextmp" llbuilder
   | expr -> uncompilable expr
 and generate_call names llbuilder (Ast.ID f) args =
   let callee =

@@ -24,35 +24,35 @@ let message =
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 33 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 59 ->
+    | 61 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 36 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 37 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 40 ->
+    | 42 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 41 ->
+    | 43 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 34 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 35 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 46 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 44 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 42 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 43 ->
+    | 45 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 29 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 52 ->
-        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
-    | 53 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 54 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 55 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 56 ->
+        "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
+    | 57 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"
     | 31 ->
         "<YOUR SYNTAX ERROR MESSAGE HERE>\n"

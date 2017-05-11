@@ -14,7 +14,7 @@ extern str gets(s str)
 extern int printf(s str, d int)
 
 let int print_str(s managed_string) =
-    puts("Hi")
+    puts(s.data)
 
 let int print_int(x int) =
     printf("%d\n", x)
