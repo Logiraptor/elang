@@ -13,6 +13,7 @@ The general structure of this codebase is as follows:
 
 Small goal
 structure definition
+structure definition order should not matter
 
 Medium goal
 structure construction

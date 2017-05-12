@@ -34,51 +34,75 @@ let pf =
   let _ = build_call pf [| s |] "" llbuilder in
   ()*)
 
-let rec size_of t =
-  let open Typed_ast in
-  match t with
-  | Int n -> n
-  | String -> 1
-
-let rec get_field_offset structType field start =
+let rec get_field_offset structType field start : int =
   match structType with
   | [] -> raise (UncompilableExpression (Printf.sprintf !"no such field %s in struct" field))
   | (t, name)::rest ->
     if name = field then
       start
     else
-      get_field_offset rest field (start + (size_of t))
+      get_field_offset rest field (start + 1)
+
+let rec lltype_from_etype (etype : Loader.typ) =
+  let open Loader in
+  match etype with
+  | Arrow (input, output) -> 
+    let args = List.map lltype_from_etype input in
+    Llvm.function_type (lltype_from_etype output) (Array.of_list args)
+  | Int -> i32_t
+  | Char -> i8_t
+  | Bool -> i1_t
+  | String -> str_t
+  | Struct fields ->
+    let typ_of (t, _) = lltype_from_etype t in
+    let arg_types = List.map typ_of fields in
+    Llvm.struct_type llctx (Array.of_list arg_types)
+    |> Llvm.pointer_type
+
 
 let uncompilable expr =
-  raise (UncompilableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
+  raise (UncompilableExpression (Loader.sexp_of_ir_expr expr |> Sexplib.Sexp.to_string_hum))
 
 let rec generate_expr names llbuilder expr =
   match expr with
-  | Ast.Int i -> (Llvm.const_int i32_t i)
-  | Ast.String s -> Llvm.build_global_stringptr s "" llbuilder
-  | Ast.BinOp (op, lhs, rhs) ->
+  | Loader.IntLit i -> (Llvm.const_int i32_t i)
+  | Loader.StringLit s -> Llvm.build_global_stringptr s "" llbuilder
+  | Loader.BinOp (op, lhs, rhs) ->
     generate_bin_op names llbuilder (op, lhs, rhs)
-  | Ast.Apply (Ast.ID f, args) ->
-    generate_call names llbuilder (Ast.ID f) args
-  | Ast.TailApply (Ast.ID f, args) ->
-    let call = generate_call names llbuilder (Ast.ID f) args in
+  | Loader.Apply (Loader.ID f, args) ->
+    generate_call names llbuilder (Loader.ID f) args
+  | Loader.TailApply (Loader.ID f, args) ->
+    let call = generate_call names llbuilder (Loader.ID f) args in
     let _ = Llvm.set_tail_call true call in
     call
-  | Ast.ID i -> 
+  | Loader.ID i -> 
     (match Ast.SymbolTable.find names i with
      | None -> raise (UndefinedSymbol (Printf.sprintf "no such variable %s" i))
      | Some x -> x)
-  | Ast.If (cond, conseq, alt) -> generate_branch names llbuilder (cond, conseq, alt)
-  | Ast.Let (name, value, body) ->
+  | Loader.If (cond, conseq, alt) -> generate_branch names llbuilder (cond, conseq, alt)
+  | Loader.Let (name, value, body) ->
     let value = generate_expr names llbuilder value in
     let localNames = Ast.SymbolTable.add names name value in
     generate_expr localNames llbuilder body
-  | Ast.FieldAccess (receiver, field) ->
+  | Loader.FieldAccess (fields, receiver, field) ->
     let value = generate_expr names llbuilder receiver in
-    let offset = get_field_offset receiver field in
-    Llvm.build_in_bounds_gep value offset "indextmp" llbuilder
+    let offset = get_field_offset fields field 0 in
+    (*TODO: figure out real offset here*)
+    let addr = Llvm.build_struct_gep value offset "indextmp" llbuilder in
+    Llvm.build_load addr "loadtmp" llbuilder
+  (*Llvm.build_global_stringptr "hi" "" llbuilder*)
+  | Loader.StructLit (stype, fields) ->
+    let stype = lltype_from_etype (Loader.Struct stype) in
+    let elem_type = Llvm.element_type stype in
+    let lit = Llvm.build_alloca elem_type "structtmp" llbuilder in
+    let store_field i (name, v) =
+      let field_val = generate_expr names llbuilder v in
+      let addr = Llvm.build_struct_gep lit i "storetmp" llbuilder in
+      Llvm.build_store field_val addr llbuilder; ()
+    in
+    List.iteri store_field fields; lit
   | expr -> uncompilable expr
-and generate_call names llbuilder (Ast.ID f) args =
+and generate_call names llbuilder (Loader.ID f) args =
   let callee =
     (match Llvm.lookup_function f llm with
      | Some callee -> callee
@@ -131,20 +155,6 @@ and generate_branch names llbuilder (cond, conseq, alt) =
   Llvm.position_at_end merge_bb llbuilder;
   phi
 
-let rec lltype_from_etype (etype : Loader.typ) =
-  let open Loader in
-  match etype with
-  | Arrow (input, output) -> 
-    let args = List.map lltype_from_etype input in
-    Llvm.function_type (lltype_from_etype output) (Array.of_list args)
-  | Int -> i32_t
-  | Char -> i8_t
-  | Bool -> i1_t
-  | String -> str_t
-  | Struct fields ->
-    let typ_of (t, _) = lltype_from_etype t in
-    let arg_types = List.map typ_of fields in
-    Llvm.struct_type llctx (Array.of_list arg_types)
 
 let add_arg_decl names (typ, arg) =
   Ast.SymbolTable.add names arg (Llvm.const_int i32_t 0)
@@ -169,9 +179,9 @@ let generate_func names (name, args, expr, _) =
 
 let generate_decl names decl =
   match decl with
-  | Ast.FuncDecl f -> generate_func names f
-  | Ast.ExternDecl e -> ()
-  | Ast.TypeDecl t -> ()
+  | Loader.FuncDecl f -> generate_func names f
+  | Loader.ExternDecl e -> ()
+  | Loader.TypeDecl t -> ()
 
 let ast_func_to_lltype types name args =
   let Some etype = Ast.SymbolTable.find types name in
@@ -189,9 +199,9 @@ let add_extern_decl types names (name, args, _) =
 
 let add_decl types names decl =
   match decl with
-  | Ast.FuncDecl f -> add_func_decl types names f
-  | Ast.ExternDecl e -> add_extern_decl types names e
-  | Ast.TypeDecl e -> names
+  | Loader.FuncDecl f -> add_func_decl types names f
+  | Loader.ExternDecl e -> add_extern_decl types names e
+  | Loader.TypeDecl e -> names
 
 let generate_code m =
   let open Loader in

@@ -4,7 +4,7 @@ open Lexing
 open Printf
 
 module L = Loader.Make(FileResolver)(Syntax_analyzer)
-module Elang = Language.Make(L)(Compiler)(Interpreter)
+module Elang = Language.Make(L)(Codegen)(Interpreter)
 
 let loop print_module print_program filename  () =
   let options = Language.StringMap.of_alist_exn [

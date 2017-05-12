@@ -17,10 +17,10 @@ type expr =
   | Int of int
   | ID of symbol
   | String of string
+  | StructLit of (symbol * expr) list
   | FieldAccess of (expr * symbol)
   | BinOp of (op * expr * expr)
   | Apply of (expr * expr list)
-  | TailApply of (expr * expr list)
   | If of (expr * expr * expr)
   | Let of (symbol * expr * expr)
 [@@deriving sexp]

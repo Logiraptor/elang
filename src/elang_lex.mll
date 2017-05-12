@@ -47,6 +47,8 @@ rule read = parse
   | ","            { COMMA }
   | "("            { LPAREN }
   | ")"            { RPAREN }
+  | "{"            { LCURLY }
+  | "}"            { RCURLY }
   | "+"            { PLUS }
   | "*"            { TIMES }
   | "-"            { MINUS }

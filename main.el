@@ -14,7 +14,9 @@ extern str gets(s str)
 extern int printf(s str, d int)
 
 let int print_str(s managed_string) =
-    puts(s.data)
+    let _ = puts(s.data) in
+    let _ = print_int(s.len) in
+    0
 
 let int print_int(x int) =
     printf("%d\n", x)
@@ -31,4 +33,7 @@ let int fizz_buzz(n int) =
     else
         print_int(n)
 
-let int main() = fizz_buzz(100)
+let int main() =
+    let msg = "structures are working!" in
+    let ms = {data=msg, len=strlen(msg)} in
+    print_str(ms)

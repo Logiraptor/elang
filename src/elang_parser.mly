@@ -9,6 +9,8 @@
 %token COMMA
 %token LPAREN
 %token RPAREN
+%token LCURLY
+%token RCURLY
 %token PLUS
 %token TIMES
 %token MINUS
@@ -75,6 +77,10 @@ value:
   | f=value LPAREN p=params RPAREN {Ast.Apply (f, p) }
   | IF cond=value THEN conseq=value ELSE alt=value {Ast.If (cond, conseq, alt)}
   | LET name=ID EQUAL v=value IN body=value {Ast.Let (name, v, body)}
+  | LCURLY fields=separated_list(COMMA, field) RCURLY { Ast.StructLit fields }
+
+field:
+  | id=ID EQUAL v=value { (id, v) }
 
 %inline op:
   | PLUS {Ast.Add}

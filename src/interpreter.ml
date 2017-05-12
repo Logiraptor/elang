@@ -3,7 +3,7 @@ open Core.Std
 
 
 type value = int [@@deriving sexp]
-type program = Compiler.program
+type program = Codegen.program
 
 let string_of_value v =
   sexp_of_value v
