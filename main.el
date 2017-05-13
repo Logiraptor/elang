@@ -4,6 +4,14 @@ type char = i8
 type int = i32
 
 type managed_string = struct(data str, len i32)
+type person = struct(
+    name str,
+    addr struct (
+        street str,
+        state str,
+        country str
+    )
+)
 
 extern int strlen(s str)
 extern str malloc(size int)
@@ -17,6 +25,9 @@ let int print_str(s managed_string) =
     let _ = puts(s.data) in
     let _ = print_int(s.len) in
     0
+
+let int print_person(p person) =
+    puts(p.addr.street)
 
 let int print_int(x int) =
     printf("%d\n", x)
@@ -36,4 +47,12 @@ let int fizz_buzz(n int) =
 let int main() =
     let msg = "structures are working!" in
     let ms = {data=msg, len=strlen(msg)} in
-    print_str(ms)
+    let _  = print_str(ms) in
+    print_person({
+        name="Patrick",
+        addr={
+            street="217 Bentgrass Dr",
+            state="Louisiana",
+            country="US"
+        }
+    })

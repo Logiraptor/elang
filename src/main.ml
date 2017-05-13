@@ -12,7 +12,7 @@ let loop print_module print_program filename  () =
       ("print_program", print_program)
     ] in
   match Elang.execute options filename with
-  | Ok v -> fprintf stdout !"%{Elang.string_of_value}" v
+  | Ok v -> ()
   | Error s -> fprintf stderr "%s\n" s
 
 let () =

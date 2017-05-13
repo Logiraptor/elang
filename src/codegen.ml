@@ -208,5 +208,4 @@ let generate_code m =
   let names = List.fold_left (add_decl m.ctx.value_types) Ast.SymbolTable.empty m.ast in
   let _ = List.iter (generate_decl names) m.ast in
   let _ = Llvm_analysis.assert_valid_module llm in
-  let _ = Llvm.dump_module llm in
   Result.Ok llm

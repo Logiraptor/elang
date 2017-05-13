@@ -20,6 +20,8 @@ functional structure update (copy on write)
 Big goal:
 compound structure support (arrays / structs)
 
+establish end-to-end tests w/ coverage
+
 automatic reference counting gc
 
 High quality error messages outside of parsing. (General error marshalling module)
@@ -30,5 +32,4 @@ linking c functions (on hold until more builtins exist for `extern` definitions)
 
 additional built-ins:
     - arrays
-    - structures
     - lambdas

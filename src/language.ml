@@ -60,12 +60,19 @@ struct
     print_newline ();
     m
 
+  let dump shouldPrint toString v =
+    if shouldPrint then
+      (toString v |> print_string; print_newline (); Ok v)
+    else Ok v
+
   let execute options filename = 
     let print_module = StringMap.find options "print_module" |> Option.value ~default:false in
     let print_program = StringMap.find options "print_program" |> Option.value ~default:false in
     let open Result in
-    exec Loader.load_module Loader.string_of_module print_module filename
-    >>= exec Compile.generate_code Compile.string_of_program print_program
+    Loader.load_module filename
+    >>= dump print_module Loader.string_of_module
+    >>= Compile.generate_code
+    >>= dump print_program Compile.string_of_program
     >>= Interp.execute
 
   let string_of_value =
