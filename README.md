@@ -20,7 +20,9 @@ functional structure update (copy on write)
 Big goal:
 compound structure support (arrays / structs)
 
-establish end-to-end tests w/ coverage
+setup CI to run e2e tests
+
+figure out code coverage report and link to CI
 
 automatic reference counting gc
 
