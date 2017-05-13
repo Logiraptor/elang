@@ -12,11 +12,9 @@ The general structure of this codebase is as follows:
 ## TODO:
 
 Small goal
-structure definition
 structure definition order should not matter
 
 Medium goal
-structure construction
 functional structure update (copy on write)
 
 Big goal:
