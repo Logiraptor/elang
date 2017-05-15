@@ -188,8 +188,15 @@ struct
     try
       let typ, out_expr = type_check_expr ctx expr in
       (typ, (out_expr, pos))
-    with LoaderUndefinedSymbol s ->
+    with
+    | LoaderUndefinedSymbol s ->
       raise (Ast.Error (Ast.capture_pos pos (sprintf "undefined symbol %s\n" s)))
+    | TypeError s ->
+      raise (Ast.Error (Ast.capture_pos pos s))
+    | Uncallable s ->
+      raise (Ast.Error (Ast.capture_pos pos (sprintf "cannot call expression of type %s" s)))
+    | UntypecheckableExpression s ->
+      raise (Ast.Error (Ast.capture_pos pos (sprintf "UNIMPLEMENTED: cannot type check expression: %s" s)))
 
   let rec identify_tail_calls expr =
     let (expr, pos) = expr in
@@ -203,7 +210,7 @@ struct
   let type_check_arg (ctx : ctx) ((typ, sym) : Ast.typed_symbol) : ctx =
     {ctx with value_types = Ast.SymbolTable.add ctx.value_types sym (load_type ctx typ)}
 
-  let type_check_func (ctx : ctx) ((name, args, body, rtype) : Ast.func) : ir_func =
+  let type_check_func (ctx : ctx) ((name, args, ((bodyExpr, pos) as body), rtype) : Ast.func) : ir_func =
     let arg_type (t, n) = (load_type ctx t, n) in
     let ir_args = List.map ~f:arg_type args in
     let arg_types = List.map ~f:Tuple2.get1 ir_args in
@@ -213,7 +220,7 @@ struct
     let localctx = List.fold_left ~init:types_with_self ~f:type_check_arg args in
     let (bodyType, bodyVal) = type_check_with_errors localctx body in
     if bodyType <> expected_rtype then
-      raise (TypeError (Printf.sprintf !"return type mismatch: expected %{string_of_type} got %{string_of_type}" expected_rtype bodyType))
+      raise (Ast.Error (Ast.capture_pos pos (Printf.sprintf !"return type mismatch: expected %{string_of_type} got %{string_of_type}" expected_rtype bodyType)))
     else
       (name, ir_args, bodyVal, bodyType)
 
