@@ -167,7 +167,7 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT COMMA TIMES
 ##
 ## Ends in an error in state: 49.
 ##
-## separated_nonempty_list(COMMA,value) -> value COMMA . separated_nonempty_list(COMMA,value) [ RPAREN ]
+## separated_nonempty_list(COMMA,value_with_pos) -> value COMMA . separated_nonempty_list(COMMA,value_with_pos) [ RPAREN ]
 ##
 ## The known suffix of the stack is as follows:
 ## value COMMA 
@@ -179,8 +179,8 @@ prog: LET ID ID LPAREN RPAREN EQUAL INT LPAREN INT THEN
 ##
 ## Ends in an error in state: 38.
 ##
-## separated_nonempty_list(COMMA,value) -> value . [ RPAREN ]
-## separated_nonempty_list(COMMA,value) -> value . COMMA separated_nonempty_list(COMMA,value) [ RPAREN ]
+## separated_nonempty_list(COMMA,value_with_pos) -> value . [ RPAREN ]
+## separated_nonempty_list(COMMA,value_with_pos) -> value . COMMA separated_nonempty_list(COMMA,value_with_pos) [ RPAREN ]
 ## value -> value . DOT ID [ TIMES RPAREN PLUS MOD MINUS LPAREN EQUAL DOT COMMA AND ]
 ## value -> value . PLUS value [ TIMES RPAREN PLUS MOD MINUS LPAREN EQUAL DOT COMMA AND ]
 ## value -> value . TIMES value [ TIMES RPAREN PLUS MOD MINUS LPAREN EQUAL DOT COMMA AND ]

@@ -1,5 +1,20 @@
 open Core.Std
 
+
+type position = {
+  filename : string;
+  linenum : int;
+  beginning_of_line : int;
+  beginning_of_token : int;
+}
+[@@deriving sexp]
+
+type region = {
+  startPos: position;
+  endPos: position
+}
+[@@deriving sexp]
+
 type symbol =
   string
 [@@deriving sexp]
@@ -13,17 +28,24 @@ type op =
   | And
 [@@deriving sexp]
 
+type 'a with_pos =
+  ('a * region)
+[@@deriving sexp]
+
 type expr = 
   | Int of int
   | ID of symbol
   | String of string
-  | StructLit of (symbol * expr) list
-  | FieldAccess of (expr * symbol)
-  | BinOp of (op * expr * expr)
-  | Apply of (expr * expr list)
-  | If of (expr * expr * expr)
-  | Let of (symbol * expr * expr)
+  | StructLit of (symbol * expr_with_pos) list
+  | FieldAccess of (expr_with_pos * symbol)
+  | BinOp of (op * expr_with_pos * expr_with_pos)
+  | Apply of (expr_with_pos * expr_with_pos list)
+  | If of (expr_with_pos * expr_with_pos * expr_with_pos)
+  | Let of (symbol * expr_with_pos * expr_with_pos)
 [@@deriving sexp]
+
+and expr_with_pos =
+    expr with_pos
 
 type typ =
   | NamedType of symbol
@@ -35,7 +57,7 @@ and typed_symbol =
 [@@deriving sexp]
 
 type func =
-  (symbol * typed_symbol list * expr * typ)
+  (symbol * typed_symbol list * expr_with_pos * typ)
 [@@deriving sexp]
 
 type extern =
@@ -59,6 +81,23 @@ type prog =
 type ast =
   prog
 [@@deriving sexp]
+
+let to_pos (x : Lexing.position) =
+  let open Lexing in
+  {
+    filename = x.pos_fname;
+    linenum = x.pos_lnum;
+    beginning_of_line = x.pos_bol;
+    beginning_of_token = x.pos_cnum
+  }
+
+let make_region s e =
+  {startPos=to_pos s; endPos=to_pos e}
+
+let capture_pos (pos : region) (expr : 'a) : 'a with_pos =
+  (expr, pos)
+
+exception Error of string with_pos [@@deriving sexp]
 
 module SymbolTable = struct
   include Map.Make(struct

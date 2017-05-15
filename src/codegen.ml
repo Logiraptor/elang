@@ -63,15 +63,16 @@ let rec lltype_from_etype (etype : Loader.typ) =
 let uncompilable expr =
   raise (UncompilableExpression (Loader.sexp_of_ir_expr expr |> Sexplib.Sexp.to_string_hum))
 
-let rec generate_expr names llbuilder expr =
+let rec generate_expr names llbuilder (expr : Loader.ir_expr_with_pos) =
+  let (expr, pos) = expr in
   match expr with
   | Loader.IntLit i -> (Llvm.const_int i32_t i)
   | Loader.StringLit s -> Llvm.build_global_stringptr s "" llbuilder
   | Loader.BinOp (op, lhs, rhs) ->
     generate_bin_op names llbuilder (op, lhs, rhs)
-  | Loader.Apply (Loader.ID f, args) ->
+  | Loader.Apply ((Loader.ID f, _), args) ->
     generate_call names llbuilder (Loader.ID f) args
-  | Loader.TailApply (Loader.ID f, args) ->
+  | Loader.TailApply ((Loader.ID f, _), args) ->
     let call = generate_call names llbuilder (Loader.ID f) args in
     let _ = Llvm.set_tail_call true call in
     call

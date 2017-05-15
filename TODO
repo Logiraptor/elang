@@ -1,0 +1,27 @@
+Small goal
+structure definition order should not matter
+
+Medium goal
+functional structure update (copy on write)
+
+Big goal:
+compound structure support (arrays / structs)
+
+setup CI to run e2e tests
+
+figure out code coverage report and link to CI
+
+automatic reference counting gc
+
+High quality error messages
+    - outside of parsing. (General error marshalling module)
+    - Continue after first error
+
+
+linking c functions (on hold until more builtins exist for `extern` definitions)
+    - print_int (builtin)
+    - printf (externed)
+
+additional built-ins:
+    - arrays
+    - lambdas

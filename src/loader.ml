@@ -23,17 +23,19 @@ type ir_expr =
   | IntLit of int
   | ID of symbol
   | StringLit of string
-  | StructLit of (typed_symbol list * (symbol * ir_expr) list)
-  | FieldAccess of (typed_symbol list * ir_expr * symbol)
-  | BinOp of (op * ir_expr * ir_expr)
-  | Apply of (ir_expr * ir_expr list)
-  | If of (ir_expr * ir_expr * ir_expr)
-  | Let of (symbol * ir_expr * ir_expr)
-  | TailApply of (ir_expr * ir_expr list)
+  | StructLit of (typed_symbol list * (symbol * ir_expr_with_pos) list)
+  | FieldAccess of (typed_symbol list * ir_expr_with_pos * symbol)
+  | BinOp of (op * ir_expr_with_pos * ir_expr_with_pos)
+  | Apply of (ir_expr_with_pos * ir_expr_with_pos list)
+  | If of (ir_expr_with_pos * ir_expr_with_pos * ir_expr_with_pos)
+  | Let of (symbol * ir_expr_with_pos * ir_expr_with_pos)
+  | TailApply of (ir_expr_with_pos * ir_expr_with_pos list)
 [@@deriving sexp]
 
+and ir_expr_with_pos = ir_expr Ast.with_pos
+
 type ir_func =
-  (symbol * typed_symbol list * ir_expr * typ)
+  (symbol * typed_symbol list * ir_expr_with_pos * typ)
 [@@deriving sexp]
 
 type ir_extern =
@@ -80,7 +82,8 @@ struct
   exception UntypecheckableExpression of string
   exception Uncallable of string
   exception TypeError of string
-  exception LoaderUndefinedSymbol of string
+  exception LoaderUndefinedSymbol of symbol
+  exception LoaderUndefinedType of string
 
   let built_in_types = Ast.SymbolTable.of_alist_exn [
       ("i1", Bool);
@@ -93,13 +96,12 @@ struct
     match typ with
     | Ast.NamedType s ->
       (match Ast.SymbolTable.find ctx.types s with
-       | None -> raise (LoaderUndefinedSymbol s)
+       | None -> raise (LoaderUndefinedType s)
        | Some t -> t)
     | Ast.StructType args ->
       let convert_arg (t, name) = (load_type ctx t, name) in
       let new_args = List.map ~f:convert_arg args in
       Struct new_args
-
 
   let string_of_type t =
     let sexp = sexp_of_typ t in
@@ -118,7 +120,7 @@ struct
     | Ast.Int i -> (Int, IntLit i)
     | Ast.String s -> (String, StringLit s)
     | Ast.StructLit fields ->
-      let check_field (name, value) = (type_check_expr ctx value, name) in
+      let check_field (name, value) = (type_check_with_errors ctx value, name) in
       let types_and_values = List.map ~f:check_field fields in
       let extract_type ((t, _), name) = (t, name) in
       let extract_value ((_, v), name) = (name, v) in
@@ -126,7 +128,7 @@ struct
       let vs = List.map ~f:extract_value types_and_values in
       (Struct ts, StructLit (ts, vs))
     | Ast.FieldAccess (v, field) ->
-      (let (stype, sval) = type_check_expr ctx v in
+      (let (stype, sval) = type_check_with_errors ctx v in
        match stype with
        | Struct fields ->
          (let with_name name (_, candidate) = candidate = name in
@@ -136,8 +138,8 @@ struct
           | None -> raise (TypeError (Printf.sprintf !"no such field %s in type %{string_of_type}" field stype)))
        | other -> raise (TypeError (Printf.sprintf !"cannot access field of non-struct type: %{string_of_type}" other)))
     | Ast.Apply (f, args) ->
-      (let (ftype, fval) = type_check_expr ctx f in
-       let types_and_values = List.map ~f:(type_check_expr ctx) args in
+      (let (ftype, fval) = type_check_with_errors ctx f in
+       let types_and_values = List.map ~f:(type_check_with_errors ctx) args in
        let extract_type (t, _) = t in
        let extract_value (_, v) = v in
        let argtypes = List.map ~f:extract_type types_and_values in
@@ -151,8 +153,8 @@ struct
        | t -> raise (Uncallable (sexp_of_typ t |> Sexplib.Sexp.to_string_hum))
       )
     | Ast.BinOp (op, lhs, rhs) ->
-      (let (lhstype, lhsval) = type_check_expr ctx lhs in
-       let (rhstype, rhsval) = type_check_expr ctx rhs in
+      (let (lhstype, lhsval) = type_check_with_errors ctx lhs in
+       let (rhstype, rhsval) = type_check_with_errors ctx rhs in
        match (op, lhstype, rhstype) with
        | (Ast.Add, Int, Int) -> (Int, BinOp (op, lhsval, rhsval))
        | (Ast.Sub, Int, Int) -> (Int, BinOp (op, lhsval, rhsval))
@@ -163,9 +165,9 @@ struct
        | (otherOp, Int, Int) -> raise (TypeError (Printf.sprintf !"undefined operator %{Sexp#hum}" (Ast.sexp_of_op otherOp)))
        | other -> raise (TypeError (Printf.sprintf !"argument type mismatch: got %{string_of_type_list}" [lhstype; rhstype])))
     | Ast.If (cond, conseq, alt) ->
-      (let (condType, condVal) = type_check_expr ctx cond in
-       let (conseqType, conseqVal) = type_check_expr ctx conseq in
-       let (altType, altVal) = type_check_expr ctx alt in
+      (let (condType, condVal) = type_check_with_errors ctx cond in
+       let (conseqType, conseqVal) = type_check_with_errors ctx conseq in
+       let (altType, altVal) = type_check_with_errors ctx alt in
        if conseqType <> altType then
          raise (TypeError (Printf.sprintf !"branch mismatch error: %{string_of_type} is not compatible with %{string_of_type}" conseqType altType))
        else
@@ -175,18 +177,28 @@ struct
          (conseqType, If (condVal, conseqVal, altVal))
       )
     | Ast.Let (name, value, body) ->
-      let (valType, valVal) = type_check_expr ctx value in
+      let (valType, valVal) = type_check_with_errors ctx value in
       let localctx = {ctx with value_types = Ast.SymbolTable.add ctx.value_types name valType } in
-      let (bodyType, bodyVal) = type_check_expr localctx body in
+      let (bodyType, bodyVal) = type_check_with_errors localctx body in
       (bodyType, Let(name, valVal, bodyVal))
     | expr -> raise (UntypecheckableExpression (Ast.sexp_of_expr expr |> Sexplib.Sexp.to_string_hum))
 
+  and type_check_with_errors ctx expr_pos =
+    let expr, pos = expr_pos in
+    try
+      let typ, out_expr = type_check_expr ctx expr in
+      (typ, (out_expr, pos))
+    with LoaderUndefinedSymbol s ->
+      raise (Ast.Error (Ast.capture_pos pos (sprintf "undefined symbol %s\n" s)))
+
   let rec identify_tail_calls expr =
-    match expr with
-    | Let (name, value, body) -> Let (name, value, identify_tail_calls body)
-    | If (cond, conseq, alt) -> If (cond, identify_tail_calls conseq, identify_tail_calls alt)
-    (*| Apply (f, args) -> TailApply (f, args)*)
-    | expr -> expr
+    let (expr, pos) = expr in
+    let expr = match expr with
+      | Let (name, value, body) -> Let (name, value, identify_tail_calls body)
+      | If (cond, conseq, alt) -> If (cond, identify_tail_calls conseq, identify_tail_calls alt)
+      (*| Apply (f, args) -> TailApply (f, args)*)
+      | expr -> expr
+    in (expr, pos)
 
   let type_check_arg (ctx : ctx) ((typ, sym) : Ast.typed_symbol) : ctx =
     {ctx with value_types = Ast.SymbolTable.add ctx.value_types sym (load_type ctx typ)}
@@ -199,7 +211,7 @@ struct
     let expected_ftype = Arrow (arg_types, expected_rtype) in
     let types_with_self = {ctx with value_types = Ast.SymbolTable.add ctx.value_types name expected_ftype} in
     let localctx = List.fold_left ~init:types_with_self ~f:type_check_arg args in
-    let (bodyType, bodyVal) = type_check_expr localctx body in
+    let (bodyType, bodyVal) = type_check_with_errors localctx body in
     if bodyType <> expected_rtype then
       raise (TypeError (Printf.sprintf !"return type mismatch: expected %{string_of_type} got %{string_of_type}" expected_rtype bodyType))
     else
@@ -218,7 +230,7 @@ struct
     | Ast.ExternDecl e -> ExternDecl (type_check_extern ctx e)
     | Ast.TypeDecl (name, t) -> TypeDecl (name, load_type ctx t)
 
-  let transform_decl (f : ir_expr -> ir_expr) (d : ir_decl) =
+  let transform_decl (f : ir_expr_with_pos -> ir_expr_with_pos) (d : ir_decl) =
     match d with
     | FuncDecl (name, args, body, rtype) -> FuncDecl (name, args, f body, rtype)
     | ExternDecl e -> ExternDecl e
@@ -229,7 +241,7 @@ struct
     | Ast.TypeDecl (name, t) -> {ctx with types=Ast.SymbolTable.add ctx.types name (load_type ctx t)}
     | d -> ctx
 
-  let transform_ir (f : ir_expr -> ir_expr) (m : ir_ast) =
+  let transform_ir (f : ir_expr_with_pos -> ir_expr_with_pos) (m : ir_ast) =
     List.map m (transform_decl f)
 
   let preload_func (ctx : ctx) ((name, args, body, rtype) : Ast.func) : ctx =
@@ -254,12 +266,15 @@ struct
     | Ast.TypeDecl t -> ctx
 
   let type_check (m : Ast.ast) =
-    let ctx = {value_types=Ast.SymbolTable.empty; types=built_in_types} in
-    let user_defined_types = List.fold_left ~init:ctx ~f:add_user_types m in
-    let ftypes = List.fold_left ~init:user_defined_types ~f:preload_decl m in
-    let ir = List.map ~f:(type_check_decl ftypes) m in
-    let out = transform_ir identify_tail_calls ir in
-    Ok {ast = out; ctx = ftypes}
+    try
+      let ctx = {value_types=Ast.SymbolTable.empty; types=built_in_types} in
+      let user_defined_types = List.fold_left ~init:ctx ~f:add_user_types m in
+      let ftypes = List.fold_left ~init:user_defined_types ~f:preload_decl m in
+      let ir = List.map ~f:(type_check_decl ftypes) m in
+      let out = transform_ir identify_tail_calls ir in
+      Ok {ast = out; ctx = ftypes}
+    with Ast.Error (s, pos) ->
+      Error (ErrorReporter.report_error pos s)
 
   let load_module filename =
     let open Result in
