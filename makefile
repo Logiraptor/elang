@@ -13,8 +13,12 @@ elc: src/* docker-build-date src/error_messages.ml
 	$(locker) $(buildCmd) ./src/main.native
 	mv main.native elc
 
-test: elc
-	./test/verify-examples.sh
+verify: elc
+	rm -f bisect*.out
+	$(locker) ./test/verify-examples.sh
+	$(locker) $(oce) bisect-ppx-report -I _build/ -html coverage/ -text coverage.txt bisect*.out
+	rm -f bisect*.out
+
 
 interactive: docker-build-date
 	$(locker) bash
@@ -32,7 +36,7 @@ src/error_messages.ml: src/handmade.messages
 	menhir --compile-errors src/handmade.messages src/elang_parser.mly > src/error_messages.ml
 
 clean:
-	rm -rf _build
+	rm -rf _build coverage* elc
 
 
 nodocker: src/*

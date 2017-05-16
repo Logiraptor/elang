@@ -13,8 +13,7 @@ let pos_from_lexbuf lexbuf : Ast.region =
   let open Ast in
   {startPos=Ast.to_pos (Lexing.lexeme_start_p lexbuf); endPos=Ast.to_pos (Lexing.lexeme_end_p lexbuf)}
 
-let succeed (v : Ast.ast) =
-  (Ast.sexp_of_ast v |> Sexp.to_string_hum |> printf "%s\n"); Ok v
+let succeed (v : Ast.ast) = Ok v
 
 let fail lines lexbuf (checkpoint : 'a I.checkpoint) =
   let region = pos_from_lexbuf lexbuf in

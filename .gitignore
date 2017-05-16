@@ -2,3 +2,6 @@ _build/
 *.native
 output
 elc
+coverage
+coverage.txt
+docker-build-date

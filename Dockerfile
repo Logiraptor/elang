@@ -45,3 +45,5 @@ RUN opam install -y merlin
 RUN opam install -y ocp-indent
 
 RUN opam install -y ANSITerminal
+
+RUN opam install -y bisect_ppx
