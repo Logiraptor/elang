@@ -5,3 +5,4 @@ elc
 coverage
 coverage.txt
 docker-build-date
+bisect*.out

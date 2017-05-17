@@ -47,3 +47,7 @@ RUN opam install -y ocp-indent
 RUN opam install -y ANSITerminal
 
 RUN opam install -y bisect_ppx
+
+RUN opam install -y ocveralls
+
+RUN apt-get install -y curl

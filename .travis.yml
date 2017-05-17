@@ -1,0 +1,13 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - make elc
+
+script:
+  - make verify
+
+after_script:
+  - make coveralls
