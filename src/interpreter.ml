@@ -20,11 +20,13 @@ let result r =
   | Ok _ -> Ok 0
   | Error i -> Error (string_of_int i)
 
-let execute prog =
+let execute filename prog =
   let open Result in
-  let _ = Llvm_bitwriter.write_bitcode_file prog "output.bc" in 
-  safe_run "llc-3.8 output.bc" ()
-  >>= safe_run "gcc -c output.s" 
-  >>= safe_run "gcc -o output output.o"
-  >>= safe_run "rm output.*"
+  let basename = Filename.basename filename in
+  let (progname, _) = Filename.split_extension basename in
+  let _ = Llvm_bitwriter.write_bitcode_file prog (progname ^ ".bc") in 
+  safe_run (sprintf "llc-3.8 %s.bc" progname) ()
+  >>= safe_run (sprintf "gcc -c %s.s" progname) 
+  >>= safe_run (sprintf "gcc -o %s %s.o" progname progname)
+  >>= safe_run (sprintf "rm %s.*" progname)
   |> result

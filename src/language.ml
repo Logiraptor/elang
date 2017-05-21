@@ -32,7 +32,7 @@ end
 module type Interpreter = sig
   type program
   type value
-  val execute : program -> (value, string) Result.t
+  val execute : string -> program -> (value, string) Result.t
   val string_of_value : value -> string
 end
 
@@ -73,7 +73,7 @@ struct
     >>= dump print_module Loader.string_of_module
     >>= Compile.generate_code
     >>= dump print_program Compile.string_of_program
-    >>= Interp.execute
+    >>= Interp.execute filename
 
   let string_of_value =
     Interp.string_of_value

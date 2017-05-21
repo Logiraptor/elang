@@ -2,6 +2,8 @@ open Core.Std
 open Lexing
 open Printf
 
+type symbol = Ast.symbol [@@deriving sexp]
+
 type typ = 
   | Int
   | Char
@@ -15,7 +17,6 @@ and typed_symbol =
     (typ * Ast.symbol)
 [@@deriving sexp]
 
-type symbol = Ast.symbol [@@deriving sexp]
 
 type op = Ast.op [@@deriving sexp]
 

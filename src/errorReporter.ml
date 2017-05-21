@@ -54,7 +54,6 @@ module Errors = struct
     List.concat [bef; [line_with_number; ptr_with_padding]; aft]
 
   let print_error_block (location : string) (inner : string list) : string =
-    let (width, height) = ANSITerminal.size () in
     let right_block = String.make 16 '-' in
     let left_block = String.make 4 '-' in
     let header = left_block ^ location ^ right_block in
@@ -63,7 +62,7 @@ module Errors = struct
     String.concat ~sep:"\n" [header; body; footer]
 
   let print_error lines (pos : Ast.region) message =
-    let message = ANSITerminal.(sprintf [Bold]) "%s" (message) in
+    let message = ANSITerminal.(sprintf [Bold]) "%s\n" (message) in
     let location = ANSITerminal.(sprintf [blue]) "%s" (print_position pos) in
     let context = get_context lines pos in
     let block =  print_error_block location context in

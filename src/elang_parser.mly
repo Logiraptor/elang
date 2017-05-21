@@ -22,7 +22,6 @@
 %token STRUCT
 %token DOT
 
-
 %right ELSE
 %right IN
 %left AND

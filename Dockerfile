@@ -51,3 +51,5 @@ RUN opam install -y bisect_ppx
 RUN opam install -y ocveralls
 
 RUN apt-get install -y curl
+
+RUN opam install -y core_extended

@@ -13,7 +13,7 @@ let loop print_module print_program filename  () =
     ] in
   match Elang.execute options filename with
   | Ok v -> ()
-  | Error s -> fprintf stderr "%s\n" s
+  | Error s -> fprintf stderr "%s\n" s; exit 1
 
 let () =
   Command.basic ~summary:"interpret an elang program"
