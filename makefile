@@ -9,16 +9,20 @@ buildCmd = $(oce) ocamlbuild -use-ocamlfind -tag thread -menhir "menhir --table 
 
 locker = docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) -e TRAVIS=$(TRAVIS) -e TRAVIS_JOB_ID=$(TRAVIS_JOB_ID) ocaml-core
 
-elc: docker-build-date src/* # src/error_messages.ml
+elc: docker-build-date _tags src/* # src/error_messages.ml
 	$(locker) $(buildCmd) ./src/main.native
 	mv main.native elc
 
 verify: elc
+	$(locker) rm -f bisect*.out
 	$(locker) $(buildCmd) ./test/verify-examples.native
 	$(locker) ./verify-examples.native
 
 coveralls: docker-build-date
 	$(locker) $(oce) ocveralls --prefix _build --send bisect000*.out
+
+coverage: docker-build-date bisect*.out
+	$(locker) $(oce) bisect-ppx-report -I _build/ -html coverage/ bisect*.out
 
 interactive: docker-build-date
 	$(locker) bash
@@ -36,5 +40,5 @@ docker-build-date: Dockerfile
 # 	$(locker) $(oce) menhir --compile-errors src/handmade.messages src/elang_parser.mly > src/error_messages.ml
 
 clean:
-	rm -rf _build coverage* elc
+	$(locker) rm -rf _build coverage* elc
 

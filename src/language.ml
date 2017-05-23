@@ -54,12 +54,6 @@ struct
   type module_ = Compile.module_
   type program = Interp.program
 
-  let exec stage stringer print filename =
-    let m = stage filename in
-    Result.map (Result.map m stringer) print_string;
-    print_newline ();
-    m
-
   let dump shouldPrint toString v =
     if shouldPrint then
       (toString v |> print_string; print_newline (); Ok v)

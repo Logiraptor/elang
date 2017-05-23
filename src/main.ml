@@ -6,7 +6,8 @@ open Printf
 module L = Loader.Make(FileResolver)(Syntax_analyzer)
 module Elang = Language.Make(L)(Codegen)(Interpreter)
 
-let loop print_module print_program filename  () =
+let loop print_module print_program no_color filename  () =
+  ErrorReporter.set_color (not no_color);
   let options = Language.StringMap.of_alist_exn [
       ("print_module", print_module);
       ("print_program", print_program)
@@ -21,6 +22,7 @@ let () =
       empty
       +> flag "-print-module" no_arg ~doc:" dump the module after loading"
       +> flag "-print-program" no_arg ~doc:" dump the program after compilation"
+      +> flag "-no-color" no_arg ~doc:" disable colored output"
       +> anon ("filename" %: file)
     )
     loop

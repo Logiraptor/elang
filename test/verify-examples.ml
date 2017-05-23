@@ -39,7 +39,7 @@ let load_expectation source =
   match (has_output, has_error) with
   | (true, false) -> Output (output_file_name, input_contents)
   | (false, true) -> CompileError error_file_name
-  | _ -> Unknown (sprintf "%s has both an error file and output file" source)
+  | _ -> Unknown (sprintf "%s should have either an error file or output file\n" source)
 
 let load_test_case source =
   (source, load_expectation source)
@@ -48,7 +48,11 @@ let test_cases () =
   List.map ~f:load_test_case (example_files ())
 
 let compile source =
-  Shell.run_full ~expect:[0;1] "./elc" [source]
+  let open Shell.Process in
+  try
+    Shell.run_full "./elc" ["-no-color"; Filename.concat "examples" source]
+  with
+  | Failed r -> r.stderr
 
 let execute input source =
   Shell.run "./elc" [Filename.concat "examples" source];
@@ -79,8 +83,8 @@ let validate_test_case (source, expectation) =
 
 let print_result r =
   match r with
-  | Error e -> print_string e
-  | Diff s -> printf "Diff:\n%s" s
+  | Error e -> print_string e; exit 1
+  | Diff s -> printf "Diff:\n%s" s; exit 1
   | Pass -> print_string "."
 
 let results () = List.map ~f:validate_test_case (test_cases ())

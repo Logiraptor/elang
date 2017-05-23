@@ -6,6 +6,7 @@ true: package(core), package(core_extended), \
 true: use_menhir
 <src/*>: traverse
 <src/*.ml>: package(bisect_ppx)
+<src/elang_lex*> or <src/elang_parser*> or <src/error_messages*>: -package(bisect_ppx)
 <src/*.native>: package(bisect_ppx)
 <test/*>: traverse
 <test/*>: package(oUnit), package(qcheck)

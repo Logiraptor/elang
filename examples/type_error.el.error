@@ -1,0 +1,7 @@
+return type mismatch: expected Int got String
+----examples/type_error.el:3:19-20----------------
+1: 
+2: 
+3: let i32 main() = ""
+                     ^
+--------------------------------------------------
