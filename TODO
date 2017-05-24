@@ -11,6 +11,8 @@ automatic reference counting gc
 
 High quality error messages
     - Continue after first error
+        - Type errors
+        - Parser errors
 
 linking c functions (on hold until more builtins exist for `extern` definitions)
     - print_int (builtin)

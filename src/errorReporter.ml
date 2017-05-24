@@ -116,7 +116,7 @@ let color = ref true
 let set_color v =
   color := v
 
-let report_error (pos : Ast.region) error =
+let report_error ((error, pos) : string Ast.with_pos) =
   let open Ast in
   let lines = String.Table.find_exn files pos.startPos.filename in
   Errors.print_error (!color) lines pos error

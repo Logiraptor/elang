@@ -21,7 +21,7 @@ let fail lines lexbuf (checkpoint : 'a I.checkpoint) =
   | I.HandlingError env -> 
     let state_number = I.current_state_number env in
     (try
-       Error (ErrorReporter.report_error region (Error_messages.message state_number))
+       Error (ErrorReporter.report_error (Ast.capture_pos region (Error_messages.message state_number)))
      with Not_found -> 
        Error (Printf.sprintf !"At %{ErrorReporter.Errors.print_position}: unknown syntax error in parser state: %d.%!" region state_number))
   | _ ->

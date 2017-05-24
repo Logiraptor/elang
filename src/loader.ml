@@ -273,16 +273,33 @@ struct
       preload_extern ctx e
     | Ast.TypeDecl t -> ctx
 
-  let type_check (m : Ast.ast) =
+
+  let type_check_catching_errors (ctx : ctx) prev next : (ir_ast, (string * Ast.region) list) Result.t =
     try
-      let ctx = {value_types=Ast.SymbolTable.empty; types=built_in_types} in
-      let user_defined_types = List.fold_left ~init:ctx ~f:add_user_types m in
-      let ftypes = List.fold_left ~init:user_defined_types ~f:preload_decl m in
-      let ir = List.map ~f:(type_check_decl ftypes) m in
+      let res = type_check_decl ctx next in
+      match prev with
+      | Ok ir_a -> Ok (res::ir_a)
+      | Error prev_errors -> Error prev_errors
+    with
+    | Ast.Error e ->
+      match prev with
+      | Ok _ -> Error [e]
+      | Error prev_errors -> Error (e::prev_errors)
+
+
+  let type_check (m : Ast.ast) =
+    let ctx = {value_types=Ast.SymbolTable.empty; types=built_in_types} in
+    let user_defined_types = List.fold_left ~init:ctx ~f:add_user_types m in
+    let ftypes = List.fold_left ~init:user_defined_types ~f:preload_decl m in
+    let res = List.fold_left m ~init:(Ok []) ~f:(type_check_catching_errors ftypes) in
+    match res with
+    | Ok ir -> 
       let out = transform_ir identify_tail_calls ir in
       Ok {ast = out; ctx = ftypes}
-    with Ast.Error (s, pos) ->
-      Error (ErrorReporter.report_error pos s)
+    | Error errs ->
+      let messages = List.map errs ~f:ErrorReporter.report_error in
+      Error (String.concat ~sep:"\n" messages)
+
 
   let load_module filename =
     let open Result in
