@@ -1,7 +1,7 @@
-S test
-S src
-B _build/test
-B _build/src
+S test/**
+S src/**
+B _build/test/**
+B _build/src/**
 PKG core core.std core_extended
 PKG llvm llvm.bitreader llvm.executionengine llvm.analysis
 PKG sexplib ppx_sexp_conv ppx_custom_printf qcheck oUnit

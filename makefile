@@ -15,8 +15,8 @@ elc: docker-build-date _tags src/* # src/error_messages.ml
 
 verify: elc
 	$(locker) rm -f bisect*.out
-	$(locker) $(buildCmd) ./test/verify-examples.native
-	$(locker) ./verify-examples.native
+	$(locker) $(buildCmd) ./test/verification/main.native
+	$(locker) ./main.native
 
 coveralls: docker-build-date
 	$(locker) $(oce) ocveralls --prefix _build --send bisect000*.out

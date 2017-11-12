@@ -24,32 +24,39 @@ let next_line lexbuf =
     }
 }
 
-let int = '-'? ['0'-'9'] ['0'-'9']*
-
-let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '\'']*
-
-let comment = '#' ([^ '\n']+)
+let end_example = ("end###" _+)
 
 rule read = parse
   | [' ' '\t']+    {read lexbuf}
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
-  | "EXPECT"        { EXPECT }
-  | "COMPILATION"   { COMPILATION }
-  | "TO"            { TO }
-  | "PRINT"         { PRINT }
-  | "ERROR"         { ERROR }
-  | "EXECUTION"     { EXECUTION }
-  | "WITH"          { WITH }
-  | "INPUT"         { INPUT }
-  | '"'
+  | "."       { DOT }
+  | "COMPILE" { COMPILE }
+  | "RUN" { EXECUTE }
+  | "EXPECT"  { EXPECT }
+  | "STDOUT"  { STDOUT }
+  | "STDERR"  { STDERR }
+  | "TO"      { TO }
+  | "EQUAL"   { EQUAL }
+  | "CONTAIN" { CONTAIN }
+  | "WITH"    { WITH }
+  | "INPUT"   { INPUT }
+  | "###example" { START_EXAMPLE }
+  | end_example { END_EXAMPLE }
+  | "---\n"
      { let buffer = Buffer.create 20 in
        STRING (stringl buffer lexbuf)
+     }
+  | "'"
+     { let buffer = Buffer.create 20 in
+       STRING (stringls buffer lexbuf)
      }
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof            { EOF }
 and stringl buffer = parse
-  | '"' { Buffer.contents buffer }
-  | '\\' '"' { Buffer.add_char buffer '"'; stringl buffer lexbuf }
-  | '\\' '\\' { Buffer.add_char buffer '\\'; stringl buffer lexbuf }
+  | "\n---" { Buffer.contents buffer }
   | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
-  | eof { raise (SyntaxError (makeError lexbuf "Unexpected eof inside string")) }
+  | eof { raise (SyntaxError "Unexpected eof inside string") }
+and stringls buffer = parse
+  | "'" { Buffer.contents buffer }
+  | _ as char { Buffer.add_char buffer char; stringls buffer lexbuf }
+  | eof { raise (SyntaxError "Unexpected eof inside string") }
