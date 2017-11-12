@@ -2,7 +2,7 @@
 open Lexing
 open Elang_parser
 
-exception SyntaxError of string
+exception SyntaxError of string Ast.with_pos
 
 let getError lexbuf =
     begin
@@ -22,6 +22,12 @@ let next_line lexbuf =
     { pos with pos_bol = lexbuf.lex_curr_pos;
                pos_lnum = pos.pos_lnum + 1
     }
+
+let makeError (lexbuf: Lexing.lexbuf) (message: string) : string Ast.with_pos =
+  let s = lexeme_start_p lexbuf in
+  let e = lexeme_end_p lexbuf in
+  let region = Ast.make_region s e in
+  Ast.capture_pos region message
 
 }
 
@@ -61,7 +67,7 @@ rule read = parse
      { let buffer = Buffer.create 20 in
        STRING (stringl buffer lexbuf)
      }
-  | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
+  | _              { raise (SyntaxError (makeError lexbuf ("Unexpected char: " ^ Lexing.lexeme lexbuf))) }
   | eof            { EOF }
 and stringl buffer = parse
   | '"' { Buffer.contents buffer }
@@ -71,4 +77,4 @@ and stringl buffer = parse
   | '\\' '"' { Buffer.add_char buffer '"'; stringl buffer lexbuf }
   | '\\' '\\' { Buffer.add_char buffer '\\'; stringl buffer lexbuf }
   | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
-  | eof { raise (SyntaxError ("Unexpected eof inside string")) }
+  | eof { raise (SyntaxError (makeError lexbuf "Unexpected eof inside string")) }

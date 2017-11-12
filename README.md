@@ -11,3 +11,10 @@ The general structure of this codebase is as follows:
 1. Loader -> Module | TypeError
 1. Compile (Module -> LLVM IR)
 1. Interp (LLVM IR -> Machine Code)
+
+
+## Contributing
+
+For now, see the Dockerfile for the most up to date setup instructions.
+
+`make` will build the elc binary, `make verify` runs tests.

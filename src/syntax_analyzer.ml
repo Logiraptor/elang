@@ -30,7 +30,7 @@ let fail lines lexbuf (checkpoint : 'a I.checkpoint) =
 let loop lines lexbuf result =
   let supplier = I.lexer_lexbuf_to_supplier Elang_lex.read lexbuf in
   I.loop_handle succeed (fail lines lexbuf) supplier result
-
+ 
 let parse_file (file : FileResolver.filetype) =
   let open FileResolver in
   let text = In_channel.input_all file.chan in
@@ -41,6 +41,6 @@ let parse_file (file : FileResolver.filetype) =
   try
     loop lines lexbuf (Elang_parser.Incremental.prog lexbuf.lex_curr_p)
   with
-  | Elang_lex.SyntaxError msg ->
-    Error (Printf.sprintf "%s%!" msg)
+  | Elang_lex.SyntaxError error ->
+    Error (ErrorReporter.report_error error)
 
