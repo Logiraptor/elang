@@ -1,12 +1,10 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 # add add-apt-repository
 RUN apt-get update && \
     apt-get install -y software-properties-common
 
-# taken from https://ocaml.org/docs/install.html#Ubuntu
-RUN add-apt-repository --yes ppa:avsm/ppa
-RUN apt-get update -qq && apt-get install -y opam
+RUN apt-get install -y opam
 
 RUN opam init
 
@@ -53,3 +51,5 @@ RUN opam install -y ocveralls
 RUN apt-get install -y curl
 
 RUN opam install -y core_extended
+
+RUN opam install reason.3.0.0
