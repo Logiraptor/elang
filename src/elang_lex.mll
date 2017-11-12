@@ -36,6 +36,7 @@ let int = '-'? ['0'-'9'] ['0'-'9']*
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '\'']*
 
 let comment = '#' ([^ '\n']+)
+let multiline_comment = "###" ([^'#']|('#'[^'#'])|("##"[^'#']))+ "###"
 
 rule read = parse
   | [' ' '\t']+    {read lexbuf}
@@ -60,6 +61,7 @@ rule read = parse
   | "-"            { MINUS }
   | "%"            { MOD }
   | "&"            { AND }
+  | multiline_comment { read lexbuf }
   | comment        { read lexbuf }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }

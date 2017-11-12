@@ -4,13 +4,10 @@ Small goal
 Medium goal
 
 Big goal:
-hindley-milner type inference
 
 automatic reference counting gc
 
-High quality error messages
-    - Continue after first error
-        - Parser errors
+hindley-milner type inference
 
 linking c functions (on hold until more builtins exist for `extern` definitions)
     - print_int (builtin)
