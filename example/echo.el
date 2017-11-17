@@ -1,15 +1,3 @@
-###example
-RUN WITH INPUT
----
-these contents should be replicated
----
-
-EXPECT STDOUT TO EQUAL
----
-these contents should be replicated
----
-end###
-
 extern i32 strlen(s str)
 extern str malloc(size i32)
 extern str strcpy(dst str, src str)

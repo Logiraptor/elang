@@ -11,12 +11,12 @@ module Errors = struct
 
   type error_message = {
     message : string;
-    location : Ast.region;
+    location : Position.region;
     context : context;
   }
 
-  open Ast
-  let print_position ({startPos; endPos} : Ast.region) =
+  open Position
+  let print_position ({startPos; endPos} : Position.region) =
     sprintf "%s:%d:%d-%d"
       startPos.filename
       startPos.linenum
@@ -52,7 +52,7 @@ module Errors = struct
     let ptr = String.make (end_pos - start_pos) '^' in
     lhs ^ ptr ^ rhs
 
-  let get_context lines ({startPos; endPos} : Ast.region) : context  = 
+  let get_context lines ({startPos; endPos} : Position.region) : context  = 
     let start_line_offset = startPos.beginning_of_token - startPos.beginning_of_line in
     let end_line_offset = endPos.beginning_of_token - endPos.beginning_of_line in
     let lnum = startPos.linenum - 1 in
@@ -77,7 +77,7 @@ module Errors = struct
     let body = String.concat ~sep:"\n" inner in
     String.concat ~sep:"\n" [header; body; footer]
 
-  (*let print_error lines (pos : Ast.region) message =
+  (*let print_error lines (pos : Position.region) message =
     let message = ANSITerminal.(sprintf [Bold]) "%s\n" (message) in
     let location = ANSITerminal.(sprintf [blue]) "%s" (print_position pos) in
     let context = get_context lines pos in
@@ -102,7 +102,7 @@ module Errors = struct
   let ensure_newline message =
     if String.is_suffix message ~suffix:"\n" then message else message ^ "\n"
 
-  let print_error colored lines (pos : Ast.region) message =
+  let print_error colored lines (pos : Position.region) message =
     let context = get_context lines pos in
     print colored {context=context; location=pos; message=ensure_newline message}
 end
@@ -116,8 +116,8 @@ let color = ref true
 let set_color v =
   color := v
 
-let report_error ((error, pos) : string Ast.with_pos) : string =
-  let open Ast in
+let report_error ((error, pos) : string Position.with_pos) : string =
+  let open Position in
   let lines = String.Table.find_exn files pos.startPos.filename in
   Errors.print_error (!color) lines pos error
 

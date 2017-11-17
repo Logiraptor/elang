@@ -2,7 +2,7 @@
 open Lexing
 open Elang_parser
 
-exception SyntaxError of string Ast.with_pos
+exception SyntaxError of string Position.with_pos
 
 let getError lexbuf =
     begin
@@ -23,11 +23,20 @@ let next_line lexbuf =
                pos_lnum = pos.pos_lnum + 1
     }
 
-let makeError (lexbuf: Lexing.lexbuf) (message: string) : string Ast.with_pos =
+let rec next_n_lines n lexbuf =
+  match n with
+  | 0 -> lexbuf
+  | n -> next_line lexbuf; next_n_lines (n - 1) lexbuf
+
+let makeError (lexbuf: Lexing.lexbuf) (message: string) : string Position.with_pos =
   let s = lexeme_start_p lexbuf in
   let e = lexeme_end_p lexbuf in
-  let region = Ast.make_region s e in
-  Ast.capture_pos region message
+  let region = Position.make_region s e in
+  Position.capture_pos region message
+
+let advance_lines comment lexbuf =
+  let lines = Core.Std.String.split ~on:'\n' comment in
+  next_n_lines ((List.length lines) - 1) lexbuf
 
 }
 
@@ -61,7 +70,7 @@ rule read = parse
   | "-"            { MINUS }
   | "%"            { MOD }
   | "&"            { AND }
-  | multiline_comment { read lexbuf }
+  | multiline_comment as cmt { advance_lines cmt lexbuf; read lexbuf }
   | comment        { read lexbuf }
   | int as lexeme  { INT (int_of_string lexeme) }
   | id as lexeme   { ID lexeme }

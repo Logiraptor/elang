@@ -9,7 +9,7 @@ type assertion = Contains of string | Equals of string
 type expectation = (subject * assertion)
 [@@deriving sexp]
 
-type action = Compile | RunWithInput of string
+type action = Compile of string | RunWithInput of (string * string)
 [@@deriving sexp]
 
 type testcase = (action * expectation list)
@@ -18,7 +18,7 @@ type testcase = (action * expectation list)
 type ast = testcase list
 [@@deriving sexp]
 
-let run_with_input (s: string option) : action =
+let run_with_input (filename: string) (s: string option) : action =
     match s with
-    | None -> RunWithInput ""
-    | Some text -> RunWithInput text
+    | None -> RunWithInput (filename, "")
+    | Some text -> RunWithInput (filename, text)

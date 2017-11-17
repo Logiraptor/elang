@@ -68,7 +68,7 @@ params:
   | l=separated_list(COMMA, value_with_pos) { l };
 
 %inline value_with_pos:
-  | v=value { Ast.capture_pos (Ast.make_region $startpos $endpos) v }
+  | v=value { Position.capture_pos (Position.make_region $startpos $endpos) v }
 
 value:
   | v=value_with_pos DOT id=ID {Ast.FieldAccess (v, id) }

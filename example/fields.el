@@ -1,4 +1,3 @@
-
 type s = struct(name str)
 
 let i32 main(x s) = x.age

@@ -1,0 +1,25 @@
+RUN './echo.el' WITH INPUT
+<<<
+these contents should be replicated
+>>>
+
+EXPECT STDOUT TO EQUAL
+<<<
+these contents should be replicated
+
+>>>
+
+RUN WITH INPUT
+<<<
+some other content
+
+and more here
+>>>
+
+EXPECT STDOUT TO EQUAL
+<<<
+some other content
+
+and more here
+
+>>>

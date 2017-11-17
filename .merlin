@@ -7,3 +7,4 @@ PKG llvm llvm.bitreader llvm.executionengine llvm.analysis
 PKG sexplib ppx_sexp_conv ppx_custom_printf qcheck oUnit
 PKG ANSITerminal
 PKG result
+PKG menhirLib

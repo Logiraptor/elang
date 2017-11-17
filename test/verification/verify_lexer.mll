@@ -24,8 +24,6 @@ let next_line lexbuf =
     }
 }
 
-let end_example = ("end###" _+)
-
 rule read = parse
   | [' ' '\t']+    {read lexbuf}
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
@@ -40,9 +38,7 @@ rule read = parse
   | "CONTAIN" { CONTAIN }
   | "WITH"    { WITH }
   | "INPUT"   { INPUT }
-  | "###example" { START_EXAMPLE }
-  | end_example { END_EXAMPLE }
-  | "---\n"
+  | "<<<\n"
      { let buffer = Buffer.create 20 in
        STRING (stringl buffer lexbuf)
      }
@@ -53,7 +49,7 @@ rule read = parse
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof            { EOF }
 and stringl buffer = parse
-  | "\n---" { Buffer.contents buffer }
+  | "\n>>>" { Buffer.contents buffer }
   | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
   | eof { raise (SyntaxError "Unexpected eof inside string") }
 and stringls buffer = parse

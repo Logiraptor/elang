@@ -3,33 +3,30 @@ open Lexing
 open Verification
 open Core_extended
 
+module Messages = struct 
+  let message n = "SYNTAX ERROR"
+end
 
-let print_position outx lexbuf =
-  let pos = lexbuf.lex_curr_p in
-  fprintf outx "%s:%d:%d" pos.pos_fname
-    pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)
+module P = struct
+  include Verify_parser.Incremental
+  type ast = Verification.Ast.ast
+  type 'a checkpoint = 'a Verify_parser.MenhirInterpreter.checkpoint
+end
 
-let parse_with_error lexbuf : Ast.ast option =
-  try Some (Verify_parser.prog Verify_lexer.read lexbuf) with
-  | Verify_lexer.SyntaxError msg ->
-    fprintf stderr "%a: %s\n" print_position lexbuf msg;
-    None
-  | Verify_parser.Error ->
-    fprintf stderr "%a: syntax error\n" print_position lexbuf;
-    exit (-1)
+module L = struct
+  include Verify_lexer
+  type token = Verify_parser.token
+end
 
-let rec parse_and_print lexbuf =
-  match parse_with_error lexbuf with
-  | Some value ->
-    printf "%s\n" (Sexp.to_string_hum (Ast.sexp_of_ast value))
-  | None -> ()
+module Parser = Syntax_analyzer.Make(Messages)(Verify_parser.MenhirInterpreter)(P)(L)
 
-let load_file (filename: string): In_channel.t =
-  In_channel.create filename
 
-let parse_test (contents: In_channel.t): Ast.ast option =
-  Lexing.from_channel contents
-  |> parse_with_error
+type test_result = Success | Error of (string * string)
+
+let load_file (filename: string) =
+  let open Result in
+  FileResolver.resolve filename
+  >>= Parser.parse_file
 
 let compile filename =
   let open Shell.Process in
@@ -44,44 +41,82 @@ let execute input source =
   Shell.run "./elc" [source];
   let (base, _) = Filename.split_extension source in
   let basename = Filename.basename base in
-  print_string basename;
-  let command = cmd ~input:input ("./" ^ basename) [] in
-  let output = Shell.run_full ~input:input ("./" ^ basename) [] in
+  let command = cmd ("./" ^ basename) [] in
+  let output = run ~input:input command content_and_stderr in
   Shell.rm ("./" ^ basename); output
+
+let rel_path from path =
+  Filename.concat (Filename.dirname from) path
 
 let perform_action filename action =
   match action with
-  | Ast.Compile ->
-    printf "compiling %s" filename;
-    compile filename
-  | Ast.RunWithInput s ->
-    printf "running %s with input %S" filename s;
-    execute s filename
+  | Ast.Compile source ->
+    let realpath = rel_path filename source in
+    (sprintf "-- compiling %s\n" realpath, compile realpath)
+  | Ast.RunWithInput (source, s) ->
+    let realpath = rel_path filename source in  
+    (sprintf "-- running %s with input %S\n" realpath s, execute s realpath)
 
-let verify_expectation results (subject, assertion) =
+let write_temp contents = 
+  let filename = Filename.temp_file "" "" in
+  Out_channel.write_all filename contents; filename
+
+let diff expected actual =
+  let file = write_temp expected in
+  let diff = Shell.run_full ~expect:[0;1] ~input:actual "diff" ["-u"; file; "-"] in
+  Shell.rm file; diff
+
+let verify_assertion title subject (assertion: Ast.assertion): test_result =
+  match assertion with
+  | Ast.Contains s -> 
+      if String.is_substring ~substring:s subject then Success
+      else Error (title, sprintf "Expected %S to contain %S" subject s)
+  | Ast.Equals s ->
+      if String.equal subject s then Success
+      else Error (title, sprintf "Expected no diff, got:\n\n%s\n" (diff subject s))
+
+let verify_expectation title (stdout, stderr) (subject, assertion): test_result =
   match subject with
-  | Ast.Stderr -> ()
-  | Ast.Stdout -> ()
+  | Ast.Stderr -> verify_assertion title stderr assertion
+  | Ast.Stdout -> verify_assertion title stdout assertion
 
 let execute_test filename (action, expectations) =
-    let results = perform_action filename action in
-    List.iter expectations ~f:(verify_expectation results)
+    let (title, results) = perform_action filename action in
+    List.map expectations ~f:(verify_expectation title results)
 
 let execute_tests filename (test: Ast.ast) =
-  List.iter test ~f:(execute_test filename)
+  List.map test ~f:(execute_test filename)
+
+let print_result (result: test_result) =
+  let open ANSITerminal in
+  match result with
+| Success -> print_string [ Foreground Green ] "."
+| Error (title, msg) ->
+  print_string [Bold] title;
+  print_string [  ] msg
 
 let process_example_file dir filename =
+  let () = printf "Running test %s\n" filename in
   let filename = Filename.concat dir filename in
-  let contents = load_file filename in
-  let Some test_case = parse_test contents in
-  execute_tests filename test_case
+  let parse_result = load_file filename in
+  match parse_result with
+  | Ok test_case ->
+    let results = execute_tests filename test_case in
+    List.iter (List.concat results) ~f:print_result
+  | Error error ->
+    print_string error
 
+let is_example_file name =
+  let (base, ext) = Filename.split_extension name in
+  match ext with
+  | Some "eltest" -> true
+  | _ -> false
 
-let all_files dir =
+let all_example_files dir =
   Sys.readdir dir
   |> Array.to_list
-
+  |> List.filter ~f:is_example_file
 
 let () =
-  all_files "example"
+  all_example_files "example"
   |> List.iter ~f:(process_example_file "example")

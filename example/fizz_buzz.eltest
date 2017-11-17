@@ -1,3 +1,6 @@
+RUN './fizz_buzz.el'
+EXPECT STDOUT TO EQUAL
+<<<
 1
 2
 Fizz
@@ -98,3 +101,5 @@ Fizz
 98
 Fizz
 Buzz
+
+>>>

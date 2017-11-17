@@ -1,0 +1,14 @@
+COMPILE './pretty-lexer-errors.el'
+EXPECT STDERR TO EQUAL
+<<<
+Unexpected char: $
+----example/pretty-lexer-errors.el:20:18-19----------------
+17: 
+18: 
+19: 
+20: let i32 main() = $
+                     ^
+21: 
+-----------------------------------------------------------
+
+>>>
