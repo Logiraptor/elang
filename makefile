@@ -9,14 +9,16 @@ buildCmd = $(oce) rebuild -use-ocamlfind -tag thread -menhir "menhir --table --s
 
 locker = docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) -e TRAVIS=$(TRAVIS) -e TRAVIS_JOB_ID=$(TRAVIS_JOB_ID) ocaml-core
 
+.SILENT:
+
 elc: docker-build-date _tags src/* # src/error_messages.ml
 	$(locker) $(buildCmd) ./src/main.native
 	mv main.native elc
 
 verify: elc
 	$(locker) rm -f bisect*.out
-	$(locker) $(buildCmd) ./test/verification/main.native
-	$(locker) ./main.native
+	$(locker) $(buildCmd) ./test/verify.native
+	$(locker) ./verify.native
 
 coveralls: docker-build-date
 	$(locker) $(oce) ocveralls --prefix _build --send bisect000*.out

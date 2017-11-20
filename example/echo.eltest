@@ -9,7 +9,7 @@ these contents should be replicated
 
 >>>
 
-RUN WITH INPUT
+RUN './echo.el' WITH INPUT
 <<<
 some other content
 

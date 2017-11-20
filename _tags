@@ -2,12 +2,12 @@ true: package(core), package(core_extended), \
       package(llvm), package(llvm.bitreader), package(llvm.bitwriter), \
       package(llvm.executionengine), package(llvm.analysis), \
       package(sexplib), package(ppx_sexp_conv), package(ppx_custom_printf), package(ANSITerminal)
-true: package(menhirLib)
+true: package(menhirLib), package(bisect_ppx)
 true: use_menhir
+"src": include
 <src/*>: traverse
 <src/*.ml>: package(bisect_ppx)
 <src/elang_lex*> or <src/elang_parser*> or <src/error_messages*>: -package(bisect_ppx)
 <src/*.native>: package(bisect_ppx)
-<test/**>: traverse
-<test/**>: package(oUnit), package(qcheck)
-<test/verification/*.{ml,mly,mll}> and not <test/verification/main.ml>: for-pack(Verification)
+<test/*>: traverse
+<test/*>: package(oUnit), package(qcheck)

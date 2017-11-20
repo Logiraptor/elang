@@ -13,7 +13,7 @@
 
 %token EOF
 
-%start <Ast.ast> prog
+%start <VerifyAst.ast> prog
 %%
 
 prog:
@@ -23,8 +23,8 @@ testcase:
   | a=action l=list(expectation) { (a, l) }
 
 action:
-  | COMPILE file=STRING { Ast.Compile file }
-  | EXECUTE file=STRING i=option(input) { Ast.run_with_input file i }
+  | COMPILE file=STRING { VerifyAst.Compile file }
+  | EXECUTE file=STRING i=option(input) { VerifyAst.run_with_input file i }
 
 input:
   | WITH INPUT s=STRING { s }
@@ -33,9 +33,9 @@ expectation:
   | EXPECT s=subject TO a=assertion { (s, a) }
 
 subject:
-  | STDOUT { Ast.Stdout }
-  | STDERR { Ast.Stderr }
+  | STDOUT { VerifyAst.Stdout }
+  | STDERR { VerifyAst.Stderr }
 
 assertion:
-  | CONTAIN s=STRING { Ast.Contains s }
-  | EQUAL s=STRING { Ast.Equals s }
+  | CONTAIN s=STRING { VerifyAst.Contains s }
+  | EQUAL s=STRING { VerifyAst.Equals s }

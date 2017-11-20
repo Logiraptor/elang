@@ -29,7 +29,7 @@ rule read = parse
   | ['\n' '\r']    { next_line lexbuf; read lexbuf }
   | "."       { DOT }
   | "COMPILE" { COMPILE }
-  | "RUN" { EXECUTE }
+  | "RUN"     { EXECUTE }
   | "EXPECT"  { EXPECT }
   | "STDOUT"  { STDOUT }
   | "STDERR"  { STDERR }
@@ -40,6 +40,7 @@ rule read = parse
   | "INPUT"   { INPUT }
   | "<<<\n"
      { let buffer = Buffer.create 20 in
+       next_line lexbuf;
        STRING (stringl buffer lexbuf)
      }
   | "'"
@@ -49,7 +50,8 @@ rule read = parse
   | _              { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof            { EOF }
 and stringl buffer = parse
-  | "\n>>>" { Buffer.contents buffer }
+  | "\n>>>" { next_line lexbuf; Buffer.contents buffer }
+  | ['\n' '\r'] as char { next_line lexbuf; Buffer.add_char buffer char; stringl buffer lexbuf }  
   | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
   | eof { raise (SyntaxError "Unexpected eof inside string") }
 and stringls buffer = parse

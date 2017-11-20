@@ -18,3 +18,7 @@ linking c functions (on hold until more builtins exist for `extern` definitions)
 additional built-ins:
     - arrays
     - lambdas
+
+BUGS
+
+pretty error messages in the first 3 lines of a file format wrong.

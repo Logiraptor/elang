@@ -1,6 +1,5 @@
 open Core.Std
 open Lexing
-open Verification
 open Core_extended
 
 module Messages = struct 
@@ -9,7 +8,7 @@ end
 
 module P = struct
   include Verify_parser.Incremental
-  type ast = Verification.Ast.ast
+  type ast = VerifyAst.ast
   type 'a checkpoint = 'a Verify_parser.MenhirInterpreter.checkpoint
 end
 
@@ -50,10 +49,10 @@ let rel_path from path =
 
 let perform_action filename action =
   match action with
-  | Ast.Compile source ->
+  | VerifyAst.Compile source ->
     let realpath = rel_path filename source in
     (sprintf "-- compiling %s\n" realpath, compile realpath)
-  | Ast.RunWithInput (source, s) ->
+  | VerifyAst.RunWithInput (source, s) ->
     let realpath = rel_path filename source in  
     (sprintf "-- running %s with input %S\n" realpath s, execute s realpath)
 
@@ -66,25 +65,25 @@ let diff expected actual =
   let diff = Shell.run_full ~expect:[0;1] ~input:actual "diff" ["-u"; file; "-"] in
   Shell.rm file; diff
 
-let verify_assertion title subject (assertion: Ast.assertion): test_result =
+let verify_assertion title subject (assertion: VerifyAst.assertion): test_result =
   match assertion with
-  | Ast.Contains s -> 
+  | VerifyAst.Contains s -> 
       if String.is_substring ~substring:s subject then Success
       else Error (title, sprintf "Expected %S to contain %S" subject s)
-  | Ast.Equals s ->
+  | VerifyAst.Equals s ->
       if String.equal subject s then Success
-      else Error (title, sprintf "Expected no diff, got:\n\n%s\n" (diff subject s))
+      else Error (title, sprintf "Expected no diff, got:\n\n%s\n\nwhole actual:\n%s\n" (diff subject s) subject)
 
 let verify_expectation title (stdout, stderr) (subject, assertion): test_result =
   match subject with
-  | Ast.Stderr -> verify_assertion title stderr assertion
-  | Ast.Stdout -> verify_assertion title stdout assertion
+  | VerifyAst.Stderr -> verify_assertion title stderr assertion
+  | VerifyAst.Stdout -> verify_assertion title stdout assertion
 
 let execute_test filename (action, expectations) =
     let (title, results) = perform_action filename action in
     List.map expectations ~f:(verify_expectation title results)
 
-let execute_tests filename (test: Ast.ast) =
+let execute_tests filename (test: VerifyAst.ast) =
   List.map test ~f:(execute_test filename)
 
 let print_result (result: test_result) =
@@ -96,7 +95,6 @@ let print_result (result: test_result) =
   print_string [  ] msg
 
 let process_example_file dir filename =
-  let () = printf "Running test %s\n" filename in
   let filename = Filename.concat dir filename in
   let parse_result = load_file filename in
   match parse_result with
