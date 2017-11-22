@@ -21,15 +21,15 @@ module Parser = Syntax_analyzer.Make(Messages)(Verify_parser.MenhirInterpreter)(
 
 module Dump = struct
   let dump_string s =
-    if String.contains s '\n' then
+    if (String.contains s '\n') || (String.length s > 10) then
       sprintf "\n<<<\n%s\n>>>" s
     else
       sprintf "'%s'" s
 
   let dump_action (action: VerifyAst.action) =
     match action with
-    | VerifyAst.Compile file -> sprintf !"COMPILE %{dump_string}" file
-    | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %{dump_string} WITH INPUT %{dump_string}" file input 
+    | VerifyAst.Compile file -> sprintf !"COMPILE %s" file
+    | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %s WITH INPUT %{dump_string}" file input 
 
   let dump_assertion (assertion: VerifyAst.assertion) =
     match assertion with
@@ -58,10 +58,9 @@ end
 
 let should_trust_results = ref false
 
-type test_result =
+type test_result = 
   | Success 
   | Error of (string * string)
-  | TestDump of (string * VerifyAst.testcase)
 
 let load_file (filename: string) =
   let open Result in
@@ -120,16 +119,20 @@ let verify_expectation title (stdout, stderr) (subject, assertion): test_result 
   | VerifyAst.Stderr -> verify_assertion title stderr assertion
   | VerifyAst.Stdout -> verify_assertion title stdout assertion
 
+let gather_result filename (action, _) : VerifyAst.testcase =
+  let (title, results) = perform_action filename action in
+  let (stdout, stderr) = results in
+    (action, [
+      (VerifyAst.Stdout, VerifyAst.Equals stdout);
+      (VerifyAst.Stderr, VerifyAst.Equals stderr)
+    ])
+
+let gather_results filename (test: VerifyAst.ast) =
+  List.map test ~f:(gather_result filename)
+
 let execute_test filename (action, expectations) =
-    let (title, results) = perform_action filename action in
-    if !should_trust_results then
-      let (stdout, stderr) = results in
-      [TestDump (filename, (action, [
-        (VerifyAst.Stdout, VerifyAst.Equals stdout);
-        (VerifyAst.Stderr, VerifyAst.Equals stderr)
-      ]))]
-    else
-      List.map expectations ~f:(verify_expectation title results)
+  let (title, results) = perform_action filename action in
+  List.map expectations ~f:(verify_expectation title results)
 
 let execute_tests filename (test: VerifyAst.ast) =
   List.map test ~f:(execute_test filename)
@@ -141,16 +144,21 @@ let print_result (result: test_result) =
   | Error (title, msg) ->
     print_string [Bold] title;
     print_string [  ] msg
-  | TestDump (filename, test) ->
-    Out_channel.write_all filename (Dump.dump_test test)
+
+let print_results (results: test_result list) =
+  List.iter ~f:print_result results
 
 let process_example_file dir filename =
   let filename = Filename.concat dir filename in
   let parse_result = load_file filename in
   match parse_result with
   | Ok test_case ->
-    let results = execute_tests filename test_case in
-    List.iter (List.concat results) ~f:print_result
+    (if !should_trust_results then
+      let results = gather_results filename test_case in    
+      Out_channel.write_all filename (Dump.dump_tests results)
+    else
+      let results = execute_tests filename test_case in
+      print_results (List.concat results))
   | Error error ->
     print_string error
 
@@ -178,15 +186,3 @@ let () =
     )
     run
   |> Command.run
-
-let () = Dump.dump_tests VerifyAst.([
-  ((Compile "foobar.ml"), [
-    (Stderr, Equals "stderr content");
-    (Stdout, Contains "stdout partial content")
-  ]);
-  ((RunWithInput ("foobar.ml", "input
-   content")), [
-    (Stderr, Equals "stderr content");
-    (Stdout, Contains "stdout partial content")
-  ])
-]) |> print_string
