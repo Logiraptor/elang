@@ -19,9 +19,49 @@ end
 
 module Parser = Syntax_analyzer.Make(Messages)(Verify_parser.MenhirInterpreter)(P)(L)
 
+module Dump = struct
+  let dump_string s =
+    if String.contains s '\n' then
+      sprintf "\n<<<\n%s\n>>>" s
+    else
+      sprintf "'%s'" s
+
+  let dump_action (action: VerifyAst.action) =
+    match action with
+    | VerifyAst.Compile file -> sprintf !"COMPILE %{dump_string}" file
+    | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %{dump_string} WITH INPUT %{dump_string}" file input 
+
+  let dump_assertion (assertion: VerifyAst.assertion) =
+    match assertion with
+    | VerifyAst.Equals value -> sprintf !"EQUAL %{dump_string}" value
+    | VerifyAst.Contains value -> sprintf !"CONTAIN %{dump_string}" value
+
+  let dump_subject (subject: VerifyAst.subject) =
+    match subject with
+    | VerifyAst.Stderr -> "STDERR"
+    | VerifyAst.Stdout -> "STDOUT"
+
+  let dump_expectation ((subject, assertion): VerifyAst.expectation) =
+    sprintf "EXPECT %s TO %s" (dump_subject subject) (dump_assertion assertion)
+
+  let dump_expectations expectations =
+    List.map ~f:dump_expectation expectations
+    |> String.concat ~sep:"\n"
+
+  let dump_test ((action, expectations): VerifyAst.testcase) =
+    (dump_action action) ^ "\n" ^ (dump_expectations expectations)
+
+  let dump_tests tests =
+    List.map ~f:dump_test tests
+    |> String.concat ~sep:"\n\n"
+end
+
 let should_trust_results = ref false
 
-type test_result = Success | Error of (string * string)
+type test_result =
+  | Success 
+  | Error of (string * string)
+  | TestDump of (string * VerifyAst.testcase)
 
 let load_file (filename: string) =
   let open Result in
@@ -82,7 +122,14 @@ let verify_expectation title (stdout, stderr) (subject, assertion): test_result 
 
 let execute_test filename (action, expectations) =
     let (title, results) = perform_action filename action in
-    List.map expectations ~f:(verify_expectation title results)
+    if !should_trust_results then
+      let (stdout, stderr) = results in
+      [TestDump (filename, (action, [
+        (VerifyAst.Stdout, VerifyAst.Equals stdout);
+        (VerifyAst.Stderr, VerifyAst.Equals stderr)
+      ]))]
+    else
+      List.map expectations ~f:(verify_expectation title results)
 
 let execute_tests filename (test: VerifyAst.ast) =
   List.map test ~f:(execute_test filename)
@@ -90,10 +137,12 @@ let execute_tests filename (test: VerifyAst.ast) =
 let print_result (result: test_result) =
   let open ANSITerminal in
   match result with
-| Success -> print_string [ Foreground Green ] "."
-| Error (title, msg) ->
-  print_string [Bold] title;
-  print_string [  ] msg
+  | Success -> print_string [ Foreground Green ] "."
+  | Error (title, msg) ->
+    print_string [Bold] title;
+    print_string [  ] msg
+  | TestDump (filename, test) ->
+    Out_channel.write_all filename (Dump.dump_test test)
 
 let process_example_file dir filename =
   let filename = Filename.concat dir filename in
@@ -130,42 +179,7 @@ let () =
     run
   |> Command.run
 
-let dump_string s =
-  if String.contains s '\n' then
-    sprintf "\n---\n%s\n---" s
-  else
-    sprintf "'%s'" s
-
-let dump_action (action: VerifyAst.action) =
-  match action with
-  | VerifyAst.Compile file -> sprintf !"COMPILE %{dump_string}" file
-  | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %{dump_string} WITH INPUT %{dump_string}" file input 
-
-let dump_assertion (assertion: VerifyAst.assertion) =
-  match assertion with
-  | VerifyAst.Equals value -> sprintf !"EQUAL %{dump_string}" value
-  | VerifyAst.Contains value -> sprintf !"CONTAIN %{dump_string}" value
-
-let dump_subject (subject: VerifyAst.subject) =
-  match subject with
-  | VerifyAst.Stderr -> "STDERR"
-  | VerifyAst.Stdout -> "STDOUT"
-
-let dump_expectation ((subject, assertion): VerifyAst.expectation) =
-  sprintf "EXPECT %s TO %s" (dump_subject subject) (dump_assertion assertion)
-
-let dump_expectations expectations =
-  List.map ~f:dump_expectation expectations
-  |> String.concat ~sep:"\n"
-
-let dump_test ((action, expectations): VerifyAst.testcase) =
-  (dump_action action) ^ "\n" ^ (dump_expectations expectations)
-
-let dump_tests tests =
-  List.map ~f:dump_test tests
-  |> String.concat ~sep:"\n\n"
-
-let () = dump_tests VerifyAst.([
+let () = Dump.dump_tests VerifyAst.([
   ((Compile "foobar.ml"), [
     (Stderr, Equals "stderr content");
     (Stdout, Contains "stdout partial content")
