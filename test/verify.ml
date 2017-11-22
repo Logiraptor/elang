@@ -19,6 +19,7 @@ end
 
 module Parser = Syntax_analyzer.Make(Messages)(Verify_parser.MenhirInterpreter)(P)(L)
 
+let should_trust_results = ref false
 
 type test_result = Success | Error of (string * string)
 
@@ -115,6 +116,63 @@ let all_example_files dir =
   |> Array.to_list
   |> List.filter ~f:is_example_file
 
-let () =
+let run trust_results () =
+  should_trust_results := trust_results;
   all_example_files "example"
   |> List.iter ~f:(process_example_file "example")
+
+let () =
+  Command.basic ~summary:"verify elang compiler examples"
+    Command.Spec.(
+      empty
+      +> flag "-trust-results" no_arg ~doc:" overwrite expectations with actual results"
+    )
+    run
+  |> Command.run
+
+let dump_string s =
+  if String.contains s '\n' then
+    sprintf "\n---\n%s\n---" s
+  else
+    sprintf "'%s'" s
+
+let dump_action (action: VerifyAst.action) =
+  match action with
+  | VerifyAst.Compile file -> sprintf !"COMPILE %{dump_string}" file
+  | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %{dump_string} WITH INPUT %{dump_string}" file input 
+
+let dump_assertion (assertion: VerifyAst.assertion) =
+  match assertion with
+  | VerifyAst.Equals value -> sprintf !"EQUAL %{dump_string}" value
+  | VerifyAst.Contains value -> sprintf !"CONTAIN %{dump_string}" value
+
+let dump_subject (subject: VerifyAst.subject) =
+  match subject with
+  | VerifyAst.Stderr -> "STDERR"
+  | VerifyAst.Stdout -> "STDOUT"
+
+let dump_expectation ((subject, assertion): VerifyAst.expectation) =
+  sprintf "EXPECT %s TO %s" (dump_subject subject) (dump_assertion assertion)
+
+let dump_expectations expectations =
+  List.map ~f:dump_expectation expectations
+  |> String.concat ~sep:"\n"
+
+let dump_test ((action, expectations): VerifyAst.testcase) =
+  (dump_action action) ^ "\n" ^ (dump_expectations expectations)
+
+let dump_tests tests =
+  List.map ~f:dump_test tests
+  |> String.concat ~sep:"\n\n"
+
+let () = dump_tests VerifyAst.([
+  ((Compile "foobar.ml"), [
+    (Stderr, Equals "stderr content");
+    (Stdout, Contains "stdout partial content")
+  ]);
+  ((RunWithInput ("foobar.ml", "input
+   content")), [
+    (Stderr, Equals "stderr content");
+    (Stdout, Contains "stdout partial content")
+  ])
+]) |> print_string
