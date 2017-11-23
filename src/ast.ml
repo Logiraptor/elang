@@ -31,7 +31,6 @@ and expr_with_pos =
 type typ =
   | NamedType of symbol
   | StructType of typed_symbol list
-  | TypeVariable of symbol
 [@@deriving sexp]
 
 and typed_symbol =

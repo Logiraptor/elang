@@ -5,3 +5,7 @@ Street Address
 
 >>>
 EXPECT STDERR TO EQUAL ''
+
+RUN './functions.el' WITH INPUT ''
+EXPECT STDOUT TO EQUAL ''
+EXPECT STDERR TO EQUAL ''
