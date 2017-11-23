@@ -1,0 +1,68 @@
+COMPILE './pretty-lexer-errors.el'
+EXPECT STDOUT TO EQUAL ''
+EXPECT STDERR TO EQUAL 
+<<<
+Unexpected char: $
+----example/pretty-lexer-errors.el:4:18-19----------------
+1: 
+2: 
+3: 
+4: let i32 main() = $
+                    ^
+5: 
+----------------------------------------------------------
+
+>>>
+
+COMPILE './pretty-syntax-errors.el'
+EXPECT STDOUT TO EQUAL ''
+EXPECT STDERR TO EQUAL 
+<<<
+<YOUR SYNTAX ERROR MESSAGE HERE>
+----example/pretty-syntax-errors.el:3:18-19----------------
+1: 
+2: 
+3: let i32 main() = %%
+                    ^
+4: 
+-----------------------------------------------------------
+
+>>>
+
+COMPILE './pretty-type-errors.el'
+EXPECT STDOUT TO EQUAL ''
+EXPECT STDERR TO EQUAL 
+<<<
+cannot access field of non-struct type: Int
+----example/pretty-type-errors.el:5:22-27----------------
+2: 
+3: let i32 main(x s) = x.age
+4: 
+5: let i32 foo(i i32) = i.bar
+                        ^^^^^
+---------------------------------------------------------
+no such field age in type (Struct ((String name)))
+----example/pretty-type-errors.el:3:21-26----------------
+1: type s = struct(name str)
+2: 
+3: let i32 main(x s) = x.age
+                       ^^^^^
+4: 
+5: let i32 foo(i i32) = i.bar
+---------------------------------------------------------
+
+>>>
+
+COMPILE './type_error.el'
+EXPECT STDOUT TO EQUAL ''
+EXPECT STDERR TO EQUAL 
+<<<
+return type mismatch: expected Int got String
+----example/type_error.el:3:19-20----------------
+1: 
+2: 
+3: let i32 main() = ""
+                     ^
+-------------------------------------------------
+
+>>>

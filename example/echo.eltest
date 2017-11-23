@@ -1,25 +1,25 @@
-RUN './echo.el' WITH INPUT
+RUN './echo.el' WITH INPUT 
 <<<
 these contents should be replicated
 >>>
-
-EXPECT STDOUT TO EQUAL
+EXPECT STDOUT TO EQUAL 
 <<<
 these contents should be replicated
 
 >>>
+EXPECT STDERR TO EQUAL ''
 
-RUN './echo.el' WITH INPUT
+RUN './echo.el' WITH INPUT 
 <<<
 some other content
 
 and more here
 >>>
-
-EXPECT STDOUT TO EQUAL
+EXPECT STDOUT TO EQUAL 
 <<<
 some other content
 
 and more here
 
 >>>
+EXPECT STDERR TO EQUAL ''

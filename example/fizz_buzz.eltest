@@ -1,5 +1,5 @@
-RUN './fizz_buzz.el'
-EXPECT STDOUT TO EQUAL
+RUN './fizz_buzz.el' WITH INPUT ''
+EXPECT STDOUT TO EQUAL 
 <<<
 1
 2
@@ -103,3 +103,4 @@ Fizz
 Buzz
 
 >>>
+EXPECT STDERR TO EQUAL ''

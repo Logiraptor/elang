@@ -1,0 +1,7 @@
+RUN './structures.el' WITH INPUT ''
+EXPECT STDOUT TO EQUAL 
+<<<
+Street Address
+
+>>>
+EXPECT STDERR TO EQUAL ''

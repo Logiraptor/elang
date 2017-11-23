@@ -28,8 +28,8 @@ module Dump = struct
 
   let dump_action (action: VerifyAst.action) =
     match action with
-    | VerifyAst.Compile file -> sprintf !"COMPILE %s" file
-    | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN %s WITH INPUT %{dump_string}" file input 
+    | VerifyAst.Compile file -> sprintf !"COMPILE '%s'" file
+    | VerifyAst.RunWithInput (file, input) -> sprintf !"RUN '%s' WITH INPUT %{dump_string}" file input 
 
   let dump_assertion (assertion: VerifyAst.assertion) =
     match assertion with

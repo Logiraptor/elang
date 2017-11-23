@@ -1,8 +1,0 @@
-<YOUR SYNTAX ERROR MESSAGE HERE>
-----examples/pretty-syntax-errors.el:3:18-19----------------
-1: 
-2: 
-3: let i32 main() = %%
-                    ^
-4: 
-------------------------------------------------------------
